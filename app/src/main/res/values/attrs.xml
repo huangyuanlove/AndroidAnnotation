@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LineWrapLayout">
+        <attr name="spacingHorizontal" format="dimension" />
+        <attr name="spacingVertical" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="numberpicker">
+        <attr name="startRange" format="integer" />
+        <attr name="endRange" format="integer" />
+        <attr name="defaultValue" format="integer" />
+        <attr name="maxValue" format="integer" />
+        <attr name="wrap" format="boolean" />
+    </declare-styleable>
+
+    <!-- NumberPicker style. -->
+    <attr name="numberPickerStyle" format="reference" />
+    <!-- NumberPicker up button style. -->
+    <attr name="numberPickerUpButtonStyle" format="reference" />
+    <!-- NumberPicker down button style. -->
+    <attr name="numberPickerDownButtonStyle" format="reference" />
+    <!-- NumberPicker input text style. -->
+    <attr name="numberPickerInputTextStyle" format="reference" />
+
+    <declare-styleable name="ArcView">
+        <attr name="strokeColor" format="color" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="fromDegree" format="integer" />
+        <attr name="toDegree" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="TriangleView">
+        <attr name="triangleColor" format="color" />
+        <attr name="rotateDegree" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="FilledCircleView">
+        <attr name="emptyColor" format="color" />
+        <attr name="fillColor" format="color" />
+        <attr name="fillPercentage" format="float" />
+        <attr name="offsetDegree" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="PedometerArcView">
+        <attr name="torusWidth" format="dimension"/>
+        <attr name="backgroundColor" format="color"/>
+        <attr name="processColor" format="color"/>
+        <attr name="startIndex" format="integer"/>
+        <attr name="processIndex" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="ValueGallery">
+        <attr name="min" format="integer"/>
+        <attr name="max" format="integer"/>
+        <attr name="initialValue" format="integer" />
+
+        <attr name="nameText" format="string" />
+        <attr name="unitText" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="PercentLoadingView">
+        <attr name="percent" format="float"/>
+        <attr name="lineWidth" format="dimension"/>
+    </declare-styleable>
+    <declare-styleable name="AutoPlayRecyclerView">
+        <attr name="timeInterval" format="integer" />
+        <attr name="direction" format="enum">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>
