@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
+import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_annotation.ViewInject;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
@@ -19,6 +20,13 @@ public class TestViewInjectActivity extends AppCompatActivity {
     protected Button buttonOne;
     @ViewInject(idStr = "test_view_inject_two")
     protected Button buttonTwo;
+
+    @IntentValue(key = "a1")
+    protected String a1;
+    @IntentValue(key = "a2")
+    protected String a2;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +54,8 @@ public class TestViewInjectActivity extends AppCompatActivity {
     public void onClickButtonOne(View v){
         Log.e("ClickResponder","ClickResponder invoke");
     }
+
+
 
 
 }

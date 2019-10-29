@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
  * 待实现
  */
 
-@Target(ElementType.METHOD)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)
-public @interface ClickResponder {
-    int[] id() default {0};
-    String[] idStr() default {""};
+public @interface IntentValue {
+
+    String key();
 }

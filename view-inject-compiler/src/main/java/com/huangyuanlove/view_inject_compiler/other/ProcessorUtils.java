@@ -31,6 +31,7 @@ public class ProcessorUtils {
     private Elements elementUtils;
 
     private Map<String, TypeSpec.Builder> proxyTypeSpecMap = new HashMap<>();
+    private Map<String, MethodSpec.Builder> proxyMethodSpec = new HashMap<>();
 
     public ProcessorUtils(Messager messager, Elements elementUtils) {
         this.messager = messager;
@@ -49,18 +50,42 @@ public class ProcessorUtils {
             System.out.println("---hostName---");
             System.out.println(hostName);
 
-            String viewInjectClassName = element.getEnclosingElement().getSimpleName().toString() + "$$"+PROXY;
+            String viewInjectClassName = element.getEnclosingElement().getSimpleName().toString() + "$$" + PROXY;
+            System.out.println("---hostInjectName---");
             System.out.println(viewInjectClassName);
 
+            String fieldName = element.getSimpleName().toString();
+            System.out.println("---host field name---");
+            System.out.println(fieldName);
+
+            String packageName = elementUtils.getPackageOf(element.getEnclosingElement()).getQualifiedName().toString();
+            System.out.println("--- packageName name---");
+            System.out.println(packageName);
+
+            ViewInject viewInject = element.getAnnotation(ViewInject.class);
+            System.out.println("---ViewInject value---");
+            System.out.println(viewInject.id());
+            System.out.println(viewInject.idStr());
+
+
+
+            ClassName injectViewParam = ClassName.get((TypeElement)element.getEnclosingElement());
+            System.out.println("---injectViewParam value---");
+            System.out.println(injectViewParam.simpleName());
+
+
+            System.out.println("-----------\n\n");
+
+
+
+
+
             checkAnnotationValid(element, ViewInject.class);
+
             VariableElement variableElement = (VariableElement) element;
             TypeElement classElement = (TypeElement) variableElement.getEnclosingElement();
 
 
-            ViewInject viewInject = variableElement.getAnnotation(ViewInject.class);
-
-
-            String packageName = elementUtils.getPackageOf(classElement).getQualifiedName().toString();
 
             ClassName paramsWrapper = ClassName.get(classElement);
 
@@ -70,29 +95,29 @@ public class ProcessorUtils {
                     .build();
 
 
-            MethodSpec methodSpec = MethodSpec.methodBuilder("injectView")
-                    .addAnnotation(Override.class)
-                    .addParameter(paramsWrapper, "host")
-                    .addParameter(Object.class, "source")
-                    .addCode(codeBlock)
+            MethodSpec.Builder methodSpecBuilder = proxyMethodSpec.get(hostName);
 
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(void.class)
-                    .build();
+            if (methodSpecBuilder == null) {
+                methodSpecBuilder = MethodSpec.methodBuilder("injectView")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(void.class)
+                        .addParameter(paramsWrapper, "host")
+                        .addParameter(Object.class, "source");
+                proxyMethodSpec.put(hostName, methodSpecBuilder);
+            }
+            methodSpecBuilder.addCode(codeBlock);
 
 
-            String typeSpecName = ClassValidator.getClassName(classElement, packageName) + "$$" + PROXY;
 
-            TypeSpec.Builder typeSpecBuilder = proxyTypeSpecMap.get(typeSpecName);
+
+            TypeSpec.Builder typeSpecBuilder = proxyTypeSpecMap.get(hostName);
 
             if (typeSpecBuilder == null) {
                 typeSpecBuilder = TypeSpec.classBuilder(ClassValidator.getClassName(classElement, packageName) + "$$" + PROXY)
                         .addJavadoc(JAVA_DOC);
-                proxyTypeSpecMap.put(typeSpecName, typeSpecBuilder);
+                proxyTypeSpecMap.put(hostName, typeSpecBuilder);
             }
-            typeSpecBuilder.addMethod(methodSpec);
-
-
 
         }
 
@@ -100,6 +125,10 @@ public class ProcessorUtils {
         System.out.println(proxyTypeSpecMap.size());
 
         for (Map.Entry<String, TypeSpec.Builder> entry : proxyTypeSpecMap.entrySet()) {
+
+
+
+
             System.out.println(entry.getKey());
             System.out.println(entry.getValue().build());
         }
