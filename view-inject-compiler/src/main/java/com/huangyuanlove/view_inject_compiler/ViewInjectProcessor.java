@@ -2,6 +2,7 @@ package com.huangyuanlove.view_inject_compiler;
 
 import com.google.auto.service.AutoService;
 import com.huangyuanlove.view_inject_annotation.ViewInject;
+import com.huangyuanlove.view_inject_compiler.other.ProcessorUtils;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -52,6 +53,8 @@ public class ViewInjectProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         proxyInfoMap.clear();
+        new ProcessorUtils(messager,elementUtils).process(set,roundEnvironment);
+
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(ViewInject.class);
         for (Element element : elements) {
             checkAnnotationValid(element, ViewInject.class);
