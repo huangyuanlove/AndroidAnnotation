@@ -3,7 +3,7 @@
 TODO
 
 - [x] findViewById
-- [ ] 替换为javapoet https://github.com/square/javapoet
+- [x] 替换为javapoet https://github.com/square/javapoet
 - [ ] 点击事件、长按事件
 - [ ] 广播
 - [ ] 路由
