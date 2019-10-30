@@ -23,7 +23,7 @@ import com.huangyuanlove.view_inject_api.ViewInjector;
  */
 public class TestViewInjectFragment extends Fragment {
 
-    @com.huangyuanlove.view_inject_annotation.BindView(id = R.id.test_view_inject_one)
+    @BindView(id = R.id.test_view_inject_one)
     protected Button buttonOne;
     @BindView(idStr = "test_view_inject_two")
     protected Button buttonTwo;
@@ -33,12 +33,11 @@ public class TestViewInjectFragment extends Fragment {
     @IntentValue(key = "a2")
     protected String a2;
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_test_view_inject,container,false);
-        ViewInjector.injectView(this,view);
+        ViewInjector.bind(this,view);
         return view;
     }
 }

@@ -32,10 +32,12 @@ public class TestViewInjectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_view_inject);
-        ViewInjector.injectView(this);
+        ViewInjector.bind(this);
+
         buttonOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(TestViewInjectActivity.this, "点击", Toast.LENGTH_SHORT).show();
             }
         });
