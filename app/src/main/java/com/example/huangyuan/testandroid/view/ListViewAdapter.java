@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.huangyuan.testandroid.R;
-import com.example.huangyuan.testandroid.annotation.BindView;
+import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.List;
@@ -67,9 +67,9 @@ public class ListViewAdapter extends BaseAdapter {
      public static  class ViewHolder{
         View view;
 
-        @BindView(R.id.text_one)
+        @BindView(id= R.id.text_one)
         public TextView textOne;
-        @BindView(R.id.text_two)
+        @BindView(id =R.id.text_two)
         public TextView textTwo;
 
         public ViewHolder(View view) {

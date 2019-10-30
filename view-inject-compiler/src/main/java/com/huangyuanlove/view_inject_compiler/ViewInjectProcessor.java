@@ -97,9 +97,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
                     String varName = variableElement.getSimpleName().toString();
                     String varType = variableElement.asType().toString();
                     BindView bindView = variableElement.getAnnotation(BindView.class);
-//
-//                    int params = bindView.id();
-//                    methodBuilder.addStatement("target.$L = ($L) view.findViewById($L)", varName, varType, params);
 
                     int params = bindView.id();
 
@@ -157,7 +154,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
     private String getClassName(TypeElement type, String pkgName) {
-        System.out.println("------\n" + pkgName +"\n"+ type.getQualifiedName() +"\n------\n");
         int packageLength = pkgName.length() + 1;
         return type.getQualifiedName().toString().substring(packageLength).replace('.', '$');
     }
