@@ -1,6 +1,7 @@
 package com.huangyuanlove.view_inject_api.template;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.Button;
 
 /**
@@ -13,5 +14,14 @@ public class TemplateActivity extends Activity {
 
     protected Button buttonOne;
     protected Button buttonTwo;
+
+
+    void onClickButtonOne(View v){
+
+    }
+
+    void onClickButtonTwo(View v){
+
+    }
 
 }

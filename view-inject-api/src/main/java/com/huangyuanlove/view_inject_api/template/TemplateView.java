@@ -30,4 +30,13 @@ public class TemplateView extends View {
     public TemplateView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
+
+    void onClickButtonOne(View v){
+
+    }
+
+    void onClickButtonTwo(View v){
+
+    }
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)
-public @interface ViewInject {
+public @interface BindView {
     int id() default -1;
     String idStr() default "";
 }

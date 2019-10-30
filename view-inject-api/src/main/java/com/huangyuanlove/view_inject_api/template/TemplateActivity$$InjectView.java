@@ -15,12 +15,26 @@ import com.huangyuanlove.view_inject_api.R;
  */
 public class TemplateActivity$$InjectView implements InjectView<TemplateActivity> {
     @Override
-    public void injectView(TemplateActivity activity) {
+    public void injectView(final TemplateActivity activity) {
         int id = -1;
+
         id = 10086;
         activity.buttonOne = activity.findViewById(id);
+        activity.buttonOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.onClickButtonOne(view);
+            }
+        });
+
         id = 1001;
         activity.buttonTwo = activity.findViewById(id);
+        activity.buttonTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.onClickButtonTwo(view);
+            }
+        });
 
     }
 

@@ -9,16 +9,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.huangyuan.testandroid.R;
+import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
-import com.huangyuanlove.view_inject_annotation.ViewInject;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 public class TestViewInjectActivity extends AppCompatActivity {
 
-    @ViewInject(id = R.id.test_view_inject_one)
+    @BindView(id = R.id.test_view_inject_one)
     protected Button buttonOne;
-    @ViewInject(idStr = "test_view_inject_two")
+    @BindView(idStr = "test_view_inject_two")
     protected Button buttonTwo;
 
     @IntentValue(key = "a1")
