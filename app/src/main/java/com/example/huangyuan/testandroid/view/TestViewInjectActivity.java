@@ -24,7 +24,6 @@ public class TestViewInjectActivity extends AppCompatActivity {
     protected Button buttonOne;
     @BindView(idStr = "test_view_inject_two")
     protected Button buttonTwo;
-
     @BindView(id = R.id.list_view)
     protected ListView listView;
 
@@ -34,26 +33,25 @@ public class TestViewInjectActivity extends AppCompatActivity {
     protected String a2;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_view_inject);
         ViewInjector.bind(this);
-
-        buttonOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(TestViewInjectActivity.this, "点击", Toast.LENGTH_SHORT).show();
-            }
-        });
-        buttonTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(TestViewInjectActivity.this, "点击", Toast.LENGTH_SHORT).show();
-            }
-        });
+//
+//        buttonOne.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                Toast.makeText(TestViewInjectActivity.this, "点击", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        buttonTwo.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(TestViewInjectActivity.this, "点击", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
 
         ((Button) findViewById(getResources().getIdentifier("test_view_inject_one", "id", getPackageName()))).setText("asdf");
@@ -63,18 +61,21 @@ public class TestViewInjectActivity extends AppCompatActivity {
             data.add("item-->" + i);
         }
 
-        ListViewAdapter adapter = new ListViewAdapter(data,this);
+        ListViewAdapter adapter = new ListViewAdapter(data, this);
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
     }
 
-    @ClickResponder(id = R.id.test_view_inject_one)
-    public void onClickButtonOne(View v){
-        Log.e("ClickResponder","ClickResponder invoke");
+    @ClickResponder(id = {R.id.test_view_inject_one})
+    public void onClickButtonOne(View v) {
+        Toast.makeText(TestViewInjectActivity.this, "test_view_inject_one", Toast.LENGTH_SHORT).show();
     }
 
-
+    @ClickResponder(idStr = {"test_view_inject_two"})
+    public void onClickButtonTwo(View v) {
+        Toast.makeText(TestViewInjectActivity.this, "test_view_inject_two", Toast.LENGTH_SHORT).show();
+    }
 
 
 }

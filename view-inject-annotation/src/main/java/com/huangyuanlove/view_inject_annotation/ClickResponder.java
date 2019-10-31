@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 public @interface ClickResponder {
-    int[] id() default {0};
+    int[] id() default {};
     String[] idStr() default {""};
 }
