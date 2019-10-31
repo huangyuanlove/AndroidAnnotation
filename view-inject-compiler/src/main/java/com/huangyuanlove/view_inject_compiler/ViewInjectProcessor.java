@@ -3,13 +3,10 @@ package com.huangyuanlove.view_inject_compiler;
 import com.google.auto.service.AutoService;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
-import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -23,7 +20,6 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -35,7 +31,9 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
 
     private Elements elementUtils;
-    private Map<TypeElement, List<Element>> bindViewmap = new HashMap<>();
+    private Map<TypeElement, List<Element>> bindViewMap = new HashMap<>();
+    private Map<TypeElement, List<Element>> clickResponderMap = new HashMap<>();
+    private Map<TypeElement, TypeSpecWrapper> typeSpecWrapperMap = new HashMap<>();
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -58,123 +56,109 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        bindViewmap.clear();
+        bindViewMap.clear();
+        typeSpecWrapperMap.clear();
 
         Set<? extends Element> bindViewSet = roundEnvironment.getElementsAnnotatedWith(BindView.class);
-//        Set<? extends Element> intentValueSet = roundEnvironment.getElementsAnnotatedWith(IntentValue.class);
         Set<? extends Element> onClickSet = roundEnvironment.getElementsAnnotatedWith(ClickResponder.class);
 
-        collectInfo(bindViewSet);
-        collectInfo(onClickSet);
-//        collectInfo(intentValueSet);
+        collectBindViewInfo(bindViewSet);
+        collectClickResponderInfo(onClickSet);
+
         generateCode();
+        for(Map.Entry<TypeElement, TypeSpecWrapper> entry:typeSpecWrapperMap.entrySet()){
+            entry.getValue().writeTo(processingEnv.getFiler());
+        }
 
         return true;
     }
 
-    private void collectInfo(Set<? extends Element> elements) {
+    private void collectBindViewInfo(Set<? extends Element> elements) {
         for (Element element : elements) {
             TypeElement typeElement = (TypeElement) element.getEnclosingElement();
-            List<Element> elementList = bindViewmap.get(typeElement);
+            List<Element> elementList = bindViewMap.get(typeElement);
             if (elementList == null) {
                 elementList = new ArrayList<>();
-                bindViewmap.put(typeElement, elementList);
+                bindViewMap.put(typeElement, elementList);
             }
             elementList.add(element);
         }
     }
 
+    private void collectClickResponderInfo(Set<? extends Element> elements) {
+        for (Element element : elements) {
+            TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+            List<Element> elementList = clickResponderMap.get(typeElement);
+            if (elementList == null) {
+                elementList = new ArrayList<>();
+                clickResponderMap.put(typeElement, elementList);
+            }
+            elementList.add(element);
+        }
+    }
+
+
     private void generateCode() {
-        for (TypeElement typeElement : bindViewmap.keySet()) {
-            MethodSpec.Builder methodBuilder = MethodSpec.constructorBuilder()
+
+        generateBindViewCode();
+        generateClickResponderCode();
+
+    }
+
+
+    private MethodSpec.Builder generateConstuctorMethodBuilder(TypeElement typeElement){
+        final String pkgName = getPackageName(typeElement);
+        final String clsName = getClassName(typeElement, pkgName) + "$ViewInjector";
+        TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(clsName)
+                .addModifiers(Modifier.PUBLIC);
+
+        TypeSpecWrapper typeSpecWrapper = typeSpecWrapperMap.get(typeElement);
+        if (typeSpecWrapper == null) {
+            typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder, pkgName);
+            typeSpecWrapperMap.put(typeElement, typeSpecWrapper);
+        }
+        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder(MethodSpec.constructorBuilder().build().name);
+        if (methodBuilder == null) {
+            methodBuilder = MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC)
                     .addParameter(ClassName.get(typeElement.asType()), "target", Modifier.FINAL)
                     .addParameter(ClassName.get("android.view", "View"), "view")
                     .addStatement("int resourceID = 0");
+            typeSpecWrapper.putMethodBuilder(methodBuilder);
+        }
+        return methodBuilder;
 
-            List<Element> elements = bindViewmap.get(typeElement);
+    }
+
+
+    private void generateBindViewCode(){
+        for (TypeElement typeElement : bindViewMap.keySet()) {
+          MethodSpec.Builder methodBuilder=  generateConstuctorMethodBuilder(typeElement);
+
+            List<Element> elements = bindViewMap.get(typeElement);
             for (Element element : elements) {
-                ElementKind kind = element.getKind();
-                if (kind == ElementKind.FIELD) {
-                    System.out.println("----element:" +   element +"-------");
+                processorBindView(element, methodBuilder);
 
-                    processorBindView(element,methodBuilder);
-
-                } else if (kind == ElementKind.METHOD) {
-                    ExecutableElement executableElement = (ExecutableElement) element;
-                    ClickResponder clickView = executableElement.getAnnotation(ClickResponder.class);
-                    int[] ids = clickView.id();
-                    String[] idStrs = clickView.idStr();
-
-
-                    if (ids != null && ids.length > 0) {
-
-                        for (int id : ids) {
-                            if(id ==0){
-                                continue;
-                            }
-                            MethodSpec innerMethodSpec = MethodSpec.methodBuilder("onClick")
-                                    .addAnnotation(Override.class)
-                                    .addModifiers(Modifier.PUBLIC)
-                                    .returns(void.class)
-                                    .addParameter(ClassName.get("android.view", "View"), "v")
-                                    .addStatement("target.$L($L)", executableElement.getSimpleName().toString(), "v")
-                                    .build();
-                            TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
-                                    .addSuperinterface(ClassName.bestGuess("View.OnClickListener"))
-                                    .addMethod(innerMethodSpec)
-                                    .build();
-                            methodBuilder.addStatement("view.findViewById($L).setOnClickListener($L)", id, innerTypeSpec);
-                        }
-                    }
-                    if (idStrs != null && idStrs.length > 0) {
-
-                        for (String idStr : idStrs) {
-                           if(idStr==null || idStr.length()<=0){
-                               continue;
-                           }
-
-                            MethodSpec innerMethodSpec = MethodSpec.methodBuilder("onClick")
-                                    .addAnnotation(Override.class)
-                                    .addModifiers(Modifier.PUBLIC)
-                                    .returns(void.class)
-                                    .addParameter(ClassName.get("android.view", "View"), "v")
-                                    .addStatement("target.$L($L)", executableElement.getSimpleName().toString(), "v")
-                                    .build();
-                            TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
-                                    .addSuperinterface(ClassName.bestGuess("View.OnClickListener"))
-                                    .addMethod(innerMethodSpec)
-                                    .build();
-
-                            methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
-
-                            methodBuilder.addStatement("view.findViewById($L).setOnClickListener($L)", "resourceID", innerTypeSpec);
-
-                        }
-                    }
-
-
-                }
-            }
-
-            final String pkgName = getPackageName(typeElement);
-            final String clsName = getClassName(typeElement, pkgName) + "$ViewInjector";
-
-            TypeSpec typeSpec = TypeSpec.classBuilder(clsName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addMethod(methodBuilder.build())
-                    .build();
-
-            JavaFile javaFile = JavaFile.builder(pkgName, typeSpec)
-                    .build();
-
-            try {
-                javaFile.writeTo(processingEnv.getFiler());
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
+
     }
+
+
+    private void generateClickResponderCode(){
+        for (TypeElement typeElement : clickResponderMap.keySet()) {
+            MethodSpec.Builder methodBuilder=  generateConstuctorMethodBuilder(typeElement);
+
+            List<Element> elements = clickResponderMap.get(typeElement);
+            for (Element element : elements) {
+                processorClickResponder(element, methodBuilder);
+
+            }
+        }
+
+    }
+
+
 
     private String getClassName(TypeElement type, String pkgName) {
         int packageLength = pkgName.length() + 1;
@@ -186,7 +170,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
 
-    private void processorBindView(Element element,MethodSpec.Builder methodBuilder){
+    private void processorBindView(Element element, MethodSpec.Builder methodBuilder) {
         VariableElement variableElement = (VariableElement) element;
         String varName = variableElement.getSimpleName().toString();
         String varType = variableElement.asType().toString();
@@ -207,5 +191,60 @@ public class ViewInjectProcessor extends AbstractProcessor {
         methodBuilder.addStatement("target.$L = ($L) view.findViewById(resourceID)", varName, varType);
 
     }
+
+    private void processorClickResponder(Element element, MethodSpec.Builder methodBuilder) {
+        ExecutableElement executableElement = (ExecutableElement) element;
+        ClickResponder clickView = executableElement.getAnnotation(ClickResponder.class);
+        int[] ids = clickView.id();
+        String[] idStrs = clickView.idStr();
+
+
+        if (ids != null && ids.length > 0) {
+
+            for (int id : ids) {
+                if (id == 0) {
+                    continue;
+                }
+                MethodSpec innerMethodSpec = MethodSpec.methodBuilder("onClick")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(void.class)
+                        .addParameter(ClassName.get("android.view", "View"), "v")
+                        .addStatement("target.$L($L)", executableElement.getSimpleName().toString(), "v")
+                        .build();
+                TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
+                        .addSuperinterface(ClassName.bestGuess("View.OnClickListener"))
+                        .addMethod(innerMethodSpec)
+                        .build();
+                methodBuilder.addStatement("view.findViewById($L).setOnClickListener($L)", id, innerTypeSpec);
+            }
+        }
+        if (idStrs != null && idStrs.length > 0) {
+
+            for (String idStr : idStrs) {
+                if (idStr == null || idStr.length() <= 0) {
+                    continue;
+                }
+
+                MethodSpec innerMethodSpec = MethodSpec.methodBuilder("onClick")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(void.class)
+                        .addParameter(ClassName.get("android.view", "View"), "v")
+                        .addStatement("target.$L($L)", executableElement.getSimpleName().toString(), "v")
+                        .build();
+                TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
+                        .addSuperinterface(ClassName.bestGuess("View.OnClickListener"))
+                        .addMethod(innerMethodSpec)
+                        .build();
+
+                methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
+
+                methodBuilder.addStatement("view.findViewById($L).setOnClickListener($L)", "resourceID", innerTypeSpec);
+
+            }
+        }
+    }
+
 
 }
