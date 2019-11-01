@@ -181,8 +181,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
         if (params <= 0) {
             String idStr = bindView.idStr();
-
-
             methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
 
         } else {
@@ -199,7 +197,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
         String[] idStrs = clickView.idStr();
 
 
-        if (ids != null && ids.length > 0) {
+        if (ids.length > 0) {
 
             for (int id : ids) {
                 if (id == 0) {
@@ -219,7 +217,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
                 methodBuilder.addStatement("view.findViewById($L).setOnClickListener($L)", id, innerTypeSpec);
             }
         }
-        if (idStrs != null && idStrs.length > 0) {
+        if (idStrs.length > 0) {
 
             for (String idStr : idStrs) {
                 if (idStr == null || idStr.length() <= 0) {
