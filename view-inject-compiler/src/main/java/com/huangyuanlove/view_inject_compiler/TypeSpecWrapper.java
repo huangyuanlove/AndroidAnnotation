@@ -23,11 +23,6 @@ public class TypeSpecWrapper {
     private HashMap<String, MethodSpec.Builder> methodBuildMap;
 
 
-
-
-
-
-
     public TypeSpec build(){
         for(Map.Entry<String,MethodSpec.Builder> entry:methodBuildMap.entrySet()){
             typeSpecBuilder.addMethod(entry.getValue().build());

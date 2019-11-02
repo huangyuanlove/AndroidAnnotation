@@ -20,6 +20,11 @@
            android:id="@+id/test_view_inject_two"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"/>
+       <Button
+           android:text="LongClick"
+           android:id="@+id/test_long_click"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"/>
    </LinearLayout>
 
     <ListView

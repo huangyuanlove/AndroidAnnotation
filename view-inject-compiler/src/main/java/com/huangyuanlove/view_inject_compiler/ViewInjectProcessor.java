@@ -3,6 +3,7 @@ package com.huangyuanlove.view_inject_compiler;
 import com.google.auto.service.AutoService;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
+import com.huangyuanlove.view_inject_annotation.LongClickResponder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -33,6 +34,9 @@ public class ViewInjectProcessor extends AbstractProcessor {
     private Elements elementUtils;
     private Map<TypeElement, List<Element>> bindViewMap = new HashMap<>();
     private Map<TypeElement, List<Element>> clickResponderMap = new HashMap<>();
+    private Map<TypeElement, List<Element>> longClickResponderMap = new HashMap<>();
+
+
     private Map<TypeElement, TypeSpecWrapper> typeSpecWrapperMap = new HashMap<>();
 
     @Override
@@ -40,6 +44,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
         Set<String> set = new LinkedHashSet<>();
         set.add(BindView.class.getCanonicalName());
         set.add(ClickResponder.class.getCanonicalName());
+        set.add(LongClickResponder.class.getCanonicalName());
         return set;
     }
 
@@ -57,21 +62,42 @@ public class ViewInjectProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         bindViewMap.clear();
+        clickResponderMap.clear();
+        longClickResponderMap.clear();
         typeSpecWrapperMap.clear();
 
         Set<? extends Element> bindViewSet = roundEnvironment.getElementsAnnotatedWith(BindView.class);
         Set<? extends Element> onClickSet = roundEnvironment.getElementsAnnotatedWith(ClickResponder.class);
+        Set<? extends Element> onLongClickSet = roundEnvironment.getElementsAnnotatedWith(LongClickResponder.class);
 
         collectBindViewInfo(bindViewSet);
         collectClickResponderInfo(onClickSet);
+        collectLongClickResponderInfo(onLongClickSet);
+
 
         generateCode();
-        for(Map.Entry<TypeElement, TypeSpecWrapper> entry:typeSpecWrapperMap.entrySet()){
+
+
+        for (Map.Entry<TypeElement, TypeSpecWrapper> entry : typeSpecWrapperMap.entrySet()) {
+
             entry.getValue().writeTo(processingEnv.getFiler());
         }
 
         return true;
     }
+
+    private void collectLongClickResponderInfo(Set<? extends Element> elements) {
+        for (Element element : elements) {
+            TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+            List<Element> elementList = longClickResponderMap.get(typeElement);
+            if (elementList == null) {
+                elementList = new ArrayList<>();
+                longClickResponderMap.put(typeElement, elementList);
+            }
+            elementList.add(element);
+        }
+    }
+
 
     private void collectBindViewInfo(Set<? extends Element> elements) {
         for (Element element : elements) {
@@ -102,11 +128,12 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
         generateBindViewCode();
         generateClickResponderCode();
+        generateOnLongClickResponderCode();
 
     }
 
 
-    private MethodSpec.Builder generateConstuctorMethodBuilder(TypeElement typeElement){
+    private MethodSpec.Builder generateConstuctorMethodBuilder(TypeElement typeElement) {
         final String pkgName = getPackageName(typeElement);
         final String clsName = getClassName(typeElement, pkgName) + "$ViewInjector";
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(clsName)
@@ -131,23 +158,37 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
 
-    private void generateBindViewCode(){
+    private void generateBindViewCode() {
         for (TypeElement typeElement : bindViewMap.keySet()) {
-          MethodSpec.Builder methodBuilder=  generateConstuctorMethodBuilder(typeElement);
+            MethodSpec.Builder methodBuilder = generateConstuctorMethodBuilder(typeElement);
 
             List<Element> elements = bindViewMap.get(typeElement);
             for (Element element : elements) {
                 processorBindView(element, methodBuilder);
-
             }
         }
 
     }
 
 
-    private void generateClickResponderCode(){
+    private void generateOnLongClickResponderCode() {
+        for (TypeElement typeElement : longClickResponderMap.keySet()) {
+            MethodSpec.Builder methodBuilder = generateConstuctorMethodBuilder(typeElement);
+
+            List<Element> elements = longClickResponderMap.get(typeElement);
+            for (Element element : elements) {
+                processorLongClickResponder(element, methodBuilder);
+            }
+
+
+        }
+
+    }
+
+
+    private void generateClickResponderCode() {
         for (TypeElement typeElement : clickResponderMap.keySet()) {
-            MethodSpec.Builder methodBuilder=  generateConstuctorMethodBuilder(typeElement);
+            MethodSpec.Builder methodBuilder = generateConstuctorMethodBuilder(typeElement);
 
             List<Element> elements = clickResponderMap.get(typeElement);
             for (Element element : elements) {
@@ -157,7 +198,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
         }
 
     }
-
 
 
     private String getClassName(TypeElement type, String pkgName) {
@@ -242,6 +282,71 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
             }
         }
+    }
+
+
+
+
+
+    private void processorLongClickResponder(Element element, MethodSpec.Builder methodBuilder) {
+        ExecutableElement executableElement = (ExecutableElement) element;
+
+        LongClickResponder longClickResponder = executableElement.getAnnotation(LongClickResponder.class);
+        int ids[] = longClickResponder.id();
+        String idStrs[] = longClickResponder.idStr();
+        if(ids.length>0) {
+            for(int id:ids){
+                if(id<=0){
+                    continue;
+                }
+
+                MethodSpec innerMethodSpec = MethodSpec.methodBuilder("onLongClick")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(boolean.class)
+                        .addParameter(ClassName.get("android.view", "View"), "v")
+                        .addStatement("target.$L($L)", executableElement.getSimpleName().toString(), "v")
+                        .addStatement("return true")
+                        .build();
+                TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
+                        .addSuperinterface(ClassName.bestGuess("View.OnLongClickListener"))
+                        .addMethod(innerMethodSpec)
+                        .build();
+                methodBuilder.addStatement("view.findViewById($L).setOnLongClickListener($L)", id, innerTypeSpec);
+
+
+            }
+        }
+
+
+        if (idStrs.length > 0) {
+
+            for (String idStr : idStrs) {
+                if (idStr == null || idStr.length() <= 0) {
+                    continue;
+                }
+
+                MethodSpec innerMethodSpec = MethodSpec.methodBuilder("onLongClick")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(boolean.class)
+                        .addParameter(ClassName.get("android.view", "View"), "v")
+                        .addStatement("target.$L($L)", executableElement.getSimpleName().toString(), "v")
+                        .addStatement("return true")
+                        .build();
+                TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
+                        .addSuperinterface(ClassName.bestGuess("View.OnLongClickListener"))
+                        .addMethod(innerMethodSpec)
+                        .build();
+
+                methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
+
+                methodBuilder.addStatement("view.findViewById($L).setOnLongClickListener($L)", "resourceID", innerTypeSpec);
+
+            }
+        }
+
+
     }
 
 

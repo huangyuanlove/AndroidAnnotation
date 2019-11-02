@@ -1,18 +1,18 @@
 package com.example.huangyuan.testandroid.view;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
+import com.huangyuanlove.view_inject_annotation.LongClickResponder;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.ArrayList;
@@ -61,6 +61,18 @@ public class TestViewInjectActivity extends AppCompatActivity {
     @ClickResponder(idStr = {"test_view_inject_two"})
     public void onClickButtonTwo(View v) {
         Toast.makeText(TestViewInjectActivity.this, "test_view_inject_two", Toast.LENGTH_SHORT).show();
+    }
+
+    @LongClickResponder(idStr = {"test_view_inject_two"})
+    public void onLongClickButtonTwo(View v){
+        Toast.makeText(TestViewInjectActivity.this, "long click button two", Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    @LongClickResponder(id = R.id.test_long_click)
+    public void onLongClick(View v){
+        Toast.makeText(TestViewInjectActivity.this, "test_long_click", Toast.LENGTH_SHORT).show();
     }
 
 

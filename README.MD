@@ -39,6 +39,23 @@ Adapter示例: `ListViewAdapter`
 
 ---
 
+#### @LongClickResponder
+在 application module中
+``` java
+ @LongClickResponder(idStr = {"test_view_inject_two"})
+    public void onLongClickButtonTwo(View v){
+        Toast.makeText(TestViewInjectActivity.this, "long click button two", Toast.LENGTH_SHORT).show();
+    }
+```
+在 library module 中
+``` java
+    @LongClickResponder(id = R.id.test_long_click)
+    public void onLongClick(View v){
+        Toast.makeText(TestViewInjectActivity.this, "test_long_click", Toast.LENGTH_SHORT).show();
+    }
+```
+支持同一个方法绑定到多个view
+
 
 
 
@@ -46,7 +63,7 @@ TODO
 
 - [x] findViewById
 - [x] 替换为javapoet https://github.com/square/javapoet
-- [ ] 点击事件、长按事件
+- [x] 点击事件、长按事件
 - [ ] 广播
 - [ ] 路由
 - [ ] 动态权限
