@@ -5,6 +5,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.google.auto.service:auto-service:1.0-rc3'
     implementation project(':view-inject-annotation')
+//    implementation 'com.huangyuanlove:view-inject-annotation:pre-0.0.2'
     implementation 'com.squareup:javapoet:1.11.1'
 }
 
@@ -17,7 +18,7 @@ publish {
     repoName = 'AndroidAnnotation'   // bintray上仓库的名字
     groupId = 'com.huangyuanlove'//jcenter上的路径
     artifactId = 'view-inject-compile'//项目名称
-    publishVersion = 'pre-0.0.2'//版本号
+    publishVersion = '0.0.2'//版本号
     desc = 'Make flow layouts simpler'// 描述
     website = 'https://github.com/huangyuanlove/AndroidAnnotation'//一般填github 项目地址,一定是要有效的地址
 }
