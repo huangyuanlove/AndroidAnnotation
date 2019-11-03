@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-api/build/intermediates/res/merged/release/layout-v21/notification_action_tombstone.xml",
+        "source": "/Users/huangyuan/.gradle/caches/transforms-1/files-1.1/core-1.1.0.aar/ba3cf12068edeb5448d905d2af440498/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-api/build/intermediates/res/merged/release/layout-v21/notification_template_icon_group.xml",
+        "source": "/Users/huangyuan/.gradle/caches/transforms-1/files-1.1/core-1.1.0.aar/ba3cf12068edeb5448d905d2af440498/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-api/build/intermediates/res/merged/release/layout-v21/notification_action.xml",
+        "source": "/Users/huangyuan/.gradle/caches/transforms-1/files-1.1/core-1.1.0.aar/ba3cf12068edeb5448d905d2af440498/res/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-api/build/intermediates/res/merged/release/layout-v21/notification_template_custom_big.xml",
+        "source": "/Users/huangyuan/.gradle/caches/transforms-1/files-1.1/core-1.1.0.aar/ba3cf12068edeb5448d905d2af440498/res/layout-v21/notification_template_custom_big.xml"
+    }
+]

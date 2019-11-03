@@ -40,11 +40,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
 
     implementation project(':view-inject-api')
+
     implementation project(':view-inject-annotation')
     annotationProcessor project(':view-inject-compiler')
-}
-repositories {
-    mavenCentral()
-    google()
-    maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
 }

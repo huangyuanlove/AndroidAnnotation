@@ -1,1 +1,1 @@
-include ':app', ':view-inject-annotation', ':view-inject-compiler', ':view-inject-api', ':temp'
+include ':app', ':view-inject-annotation', ':view-inject-compiler', ':view-inject-api', ':example_lib'
