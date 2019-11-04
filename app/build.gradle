@@ -39,8 +39,9 @@ dependencies {
     annotationProcessor "org.permissionsdispatcher:permissionsdispatcher-processor:4.5.0"
     implementation 'androidx.appcompat:appcompat:1.1.0'
 
-    implementation project(':view-inject-api')
+    implementation depend['viewInjectAnnotation']
+    implementation depend['viewInjectApi']
+    annotationProcessor depend['viewInjectCompile']
 
-    implementation project(':view-inject-annotation')
-    annotationProcessor project(':view-inject-compiler')
+
 }

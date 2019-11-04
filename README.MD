@@ -1,5 +1,14 @@
 ## 编译时注解框架
 
+
+#### 引用
+``` gradle
+    implementation 'com.huangyuanlove:view-inject-api:0.0.2'
+    implementation 'com.huangyuanlove:view-inject-annotation:0.0.2'
+    annotationProcessor 'com.huangyuanlove:view-inject-compile:0.0.2'
+
+```
+
 #### @BindView
 使用方法：
 在application module中
@@ -35,6 +44,7 @@ Adapter示例: `ListViewAdapter`
         Toast.makeText(TestViewInjectActivity.this, "test_view_inject_two", Toast.LENGTH_SHORT).show();
     }
 ```
+需要注意的是：方法的访问修饰符权限必须大于 `protected`,在方法使用前调用(一般是在OnCreate、onCreateView)`ViewInjector.bind(this);`
 支持同一个方法绑定到多个view
 
 ---
@@ -54,6 +64,7 @@ Adapter示例: `ListViewAdapter`
         Toast.makeText(TestViewInjectActivity.this, "test_long_click", Toast.LENGTH_SHORT).show();
     }
 ```
+需要注意的是：方法的访问修饰符权限必须大于 `protected`,在方法使用前调用(一般是在OnCreate、onCreateView)`ViewInjector.bind(this);`
 支持同一个方法绑定到多个view
 
 

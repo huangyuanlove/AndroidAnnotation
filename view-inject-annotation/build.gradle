@@ -1,5 +1,4 @@
 apply plugin: 'java-library'
-//apply plugin: 'bintray-release'
 apply plugin: 'com.novoda.bintray-release'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -8,51 +7,13 @@ dependencies {
 sourceCompatibility = "8"
 targetCompatibility = "8"
 
-//添加
 publish {
-    userOrg = 'huangyuanlove'//bintray.com用户名
-    repoName = 'AndroidAnnotation'   // bintray上仓库的名字
-    groupId = 'com.huangyuanlove'//jcenter上的路径
-    artifactId = 'view-inject-annotation'//项目名称
-    publishVersion = '0.0.2'//版本号
-    desc = 'Make flow layouts simpler'// 描述
-    website = 'https://github.com/huangyuanlove/AndroidAnnotation'//一般填github 项目地址,一定是要有效的地址
+    userOrg = 'huangyuanlove'
+    repoName = 'AndroidAnnotation'
+    groupId = 'com.huangyuanlove'
+    artifactId = 'view-inject-annotation'
+    publishVersion = '0.0.2'
+    desc = 'Make flow layouts simpler'
+    website = 'https://github.com/huangyuanlove/AndroidAnnotation'
 }
-
-//生成源文件
-//task sourcesJar(type: Jar) {
-//    from android.sourceSets.main.java.srcDirs
-//    classifier = 'sources'
-//}
-
-//生成Javadoc文档
-//task javadoc(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//}
-
-//文档打包成jar
-//task javadocJar(type: Jar, dependsOn: javadoc) {
-//    classifier = 'javadoc'
-//    from javadoc.destinationDir
-//}
-
-//拷贝javadoc文件
-//task copyDoc(type: Copy) {
-//    from "${buildDir}/docs/"
-//    into "docs"
-//}
-
-//上传到JCenter所需要的源码文件
-//artifacts {
-//    archives javadocJar
-//    archives sourcesJar
-//}
-
-//解决 JavaDoc 中文注释生成失败的问题
-//tasks.withType(Javadoc) {
-//    options.addStringOption('Xdoclint:none', '-quiet')
-//    options.addStringOption('encoding', 'UTF-8')
-//    options.addStringOption('charSet', 'UTF-8')
-//}
 

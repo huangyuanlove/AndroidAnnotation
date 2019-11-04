@@ -32,11 +32,11 @@ dependencies {
 
 //添加
 publish {
-    userOrg = 'huangyuanlove'//bintray.com用户名
-    repoName = 'AndroidAnnotation'   // bintray上仓库的名字
-    groupId = 'com.huangyuanlove'//jcenter上的路径
-    artifactId = 'view-inject-api'//项目名称
-    publishVersion = '0.0.2'//版本号
-    desc = 'Make flow layouts simpler'// 描述
-    website = 'https://github.com/huangyuanlove/AndroidAnnotation'//一般填github 项目地址,一定是要有效的地址
+    userOrg = 'huangyuanlove'
+    repoName = 'AndroidAnnotation'
+    groupId = 'com.huangyuanlove'
+    artifactId = 'view-inject-api'
+    publishVersion = '0.0.2'
+    desc = 'Make flow layouts simpler'
+    website = 'https://github.com/huangyuanlove/AndroidAnnotation'
 }

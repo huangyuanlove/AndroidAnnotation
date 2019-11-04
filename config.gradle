@@ -1,0 +1,11 @@
+ext {
+    depend = [
+            viewInjectAnnotation: 'com.huangyuanlove:view-inject-annotation:0.0.2',
+//            viewInjectAnnotation: project(':view-inject-api'),
+            viewInjectApi      : 'com.huangyuanlove:view-inject-api:0.0.2',
+//            viewInjectApi      : project(':view-inject-api'),
+            viewInjectCompile  : 'com.huangyuanlove:view-inject-compile:0.0.2',
+//            viewInjectCompile  : project(':view-inject-compiler'),
+
+    ]
+}
