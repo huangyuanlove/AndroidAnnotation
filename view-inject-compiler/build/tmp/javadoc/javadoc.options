@@ -1,9 +1,0 @@
--classpath '/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/build/classes/java/main:/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/build/resources/main:/Users/huangyuan/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service/1.0-rc3/35c5d43b0332b8f94d473f9fee5fb1d74b5e0056/auto-service-1.0-rc3.jar:/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-annotation/build/classes/java/main:/Users/huangyuan/.gradle/caches/modules-2/files-2.1/com.squareup/javapoet/1.11.1/210e69f58dfa76c5529a303913b4a30c2bfeb76b/javapoet-1.11.1.jar:/Users/huangyuan/.gradle/caches/modules-2/files-2.1/com.google.auto/auto-common/0.3/4073ab16ab4aceb9a217273da6442166bf51ae16/auto-common-0.3.jar:/Users/huangyuan/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/19.0/6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9/guava-19.0.jar'
--d '/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/build/docs/javadoc'
--doctitle 'view-inject-compiler API'
--quiet 
--windowtitle 'view-inject-compiler API'
-'/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/src/main/java/com/huangyuanlove/view_inject_compiler/TypeSpecWrapper.java'
-'/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/src/main/java/com/huangyuanlove/view_inject_compiler/test/TestJavaPoet.java'
-'/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/src/main/java/com/huangyuanlove/view_inject_compiler/GenerateCodeHelper.java'
-'/Users/huangyuan/AndroidStudioProjects/AndroidAnnotation/view-inject-compiler/src/main/java/com/huangyuanlove/view_inject_compiler/ViewInjectProcessor.java'

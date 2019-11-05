@@ -3,9 +3,11 @@ package com.huangyuanlove.view_inject_compiler;
 import com.google.auto.service.AutoService;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
+import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_annotation.LongClickResponder;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
     private Map<TypeElement, List<Element>> bindViewMap = new HashMap<>();
     private Map<TypeElement, List<Element>> clickResponderMap = new HashMap<>();
     private Map<TypeElement, List<Element>> longClickResponderMap = new HashMap<>();
+    private Map<TypeElement, List<Element>> intentValueMap = new HashMap<>();
 
 
     private Map<TypeElement, TypeSpecWrapper> typeSpecWrapperMap = new HashMap<>();
@@ -45,6 +48,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
         set.add(BindView.class.getCanonicalName());
         set.add(ClickResponder.class.getCanonicalName());
         set.add(LongClickResponder.class.getCanonicalName());
+        set.add(IntentValue.class.getCanonicalName());
         return set;
     }
 
@@ -65,14 +69,18 @@ public class ViewInjectProcessor extends AbstractProcessor {
         clickResponderMap.clear();
         longClickResponderMap.clear();
         typeSpecWrapperMap.clear();
+        intentValueMap.clear();
 
         Set<? extends Element> bindViewSet = roundEnvironment.getElementsAnnotatedWith(BindView.class);
         Set<? extends Element> onClickSet = roundEnvironment.getElementsAnnotatedWith(ClickResponder.class);
         Set<? extends Element> onLongClickSet = roundEnvironment.getElementsAnnotatedWith(LongClickResponder.class);
+        Set<? extends Element> intentValueSet = roundEnvironment.getElementsAnnotatedWith(IntentValue.class);
+
 
         collectBindViewInfo(bindViewSet);
         collectClickResponderInfo(onClickSet);
         collectLongClickResponderInfo(onLongClickSet);
+        collectIntentValueInfo(intentValueSet);
 
 
         generateCode();
@@ -84,6 +92,18 @@ public class ViewInjectProcessor extends AbstractProcessor {
         }
 
         return true;
+    }
+
+    private void collectIntentValueInfo(Set<? extends Element> elements) {
+        for (Element element : elements) {
+            TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+            List<Element> elementList = intentValueMap.get(typeElement);
+            if (elementList == null) {
+                elementList = new ArrayList<>();
+                intentValueMap.put(typeElement, elementList);
+            }
+            elementList.add(element);
+        }
     }
 
     private void collectLongClickResponderInfo(Set<? extends Element> elements) {
@@ -129,11 +149,12 @@ public class ViewInjectProcessor extends AbstractProcessor {
         generateBindViewCode();
         generateClickResponderCode();
         generateOnLongClickResponderCode();
+        generateIntentValueCode();
 
     }
 
 
-    private MethodSpec.Builder generateConstuctorMethodBuilder(TypeElement typeElement) {
+    private MethodSpec.Builder generateConstructorMethodBuilder(TypeElement typeElement) {
         final String pkgName = getPackageName(typeElement);
         final String clsName = getClassName(typeElement, pkgName) + "$ViewInjector";
         TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(clsName)
@@ -160,7 +181,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
     private void generateBindViewCode() {
         for (TypeElement typeElement : bindViewMap.keySet()) {
-            MethodSpec.Builder methodBuilder = generateConstuctorMethodBuilder(typeElement);
+            MethodSpec.Builder methodBuilder = generateConstructorMethodBuilder(typeElement);
 
             List<Element> elements = bindViewMap.get(typeElement);
             for (Element element : elements) {
@@ -173,7 +194,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
     private void generateOnLongClickResponderCode() {
         for (TypeElement typeElement : longClickResponderMap.keySet()) {
-            MethodSpec.Builder methodBuilder = generateConstuctorMethodBuilder(typeElement);
+            MethodSpec.Builder methodBuilder = generateConstructorMethodBuilder(typeElement);
 
             List<Element> elements = longClickResponderMap.get(typeElement);
             for (Element element : elements) {
@@ -188,7 +209,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
     private void generateClickResponderCode() {
         for (TypeElement typeElement : clickResponderMap.keySet()) {
-            MethodSpec.Builder methodBuilder = generateConstuctorMethodBuilder(typeElement);
+            MethodSpec.Builder methodBuilder = generateConstructorMethodBuilder(typeElement);
 
             List<Element> elements = clickResponderMap.get(typeElement);
             for (Element element : elements) {
@@ -197,6 +218,54 @@ public class ViewInjectProcessor extends AbstractProcessor {
             }
         }
 
+    }
+
+
+    private void generateIntentValueCode() {
+        for (TypeElement typeElement : intentValueMap.keySet()) {
+            MethodSpec.Builder methodBuilder = generateParseBundleMethodCode(typeElement);
+
+            List<Element> elements = intentValueMap.get(typeElement);
+            for (Element element : elements) {
+                processorIntentValue(element, methodBuilder);
+            }
+        }
+
+    }
+
+    private MethodSpec.Builder generateParseBundleMethodCode(TypeElement typeElement) {
+        final String pkgName = getPackageName(typeElement);
+        final String clsName = getClassName(typeElement, pkgName) + "$ViewInjector";
+        TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(clsName)
+                .addModifiers(Modifier.PUBLIC);
+
+        TypeSpecWrapper typeSpecWrapper = typeSpecWrapperMap.get(typeElement);
+        if (typeSpecWrapper == null) {
+            typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder, pkgName);
+            typeSpecWrapperMap.put(typeElement, typeSpecWrapper);
+        }
+        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("parseBundle");
+        if (methodBuilder == null) {
+
+            ClassName className = ClassName.get("android.os", "Bundle");
+
+
+            ParameterSpec parameterSpec = ParameterSpec.builder(className, "bundle")
+
+                    .build();
+
+
+            methodBuilder = MethodSpec.methodBuilder("parseBundle")
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(ClassName.get(typeElement.asType()), "target")
+                    .addParameter(parameterSpec)
+                    .returns(void.class);
+
+        }
+        typeSpecWrapper.putMethodBuilder(methodBuilder);
+
+
+        return methodBuilder;
     }
 
 
@@ -229,6 +298,80 @@ public class ViewInjectProcessor extends AbstractProcessor {
         methodBuilder.addStatement("target.$L = ($L) view.findViewById(resourceID)", varName, varType);
 
     }
+
+
+    private void processorIntentValue(Element element, MethodSpec.Builder methodBuilder) {
+        VariableElement variableElement = (VariableElement) element;
+        String varName = variableElement.getSimpleName().toString();
+        String varType = variableElement.asType().toString();
+
+
+        IntentValue intentValue = variableElement.getAnnotation(IntentValue.class);
+
+        switch (element.asType().getKind()) {
+            case BOOLEAN:
+
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getBoolean($S)", varName, intentValue.key())
+                        .endControlFlow();
+
+
+                break;
+
+
+            case SHORT:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getShort($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case BYTE:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getByte($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case INT:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getInt($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case CHAR:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getChar($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case LONG:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getLong($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case FLOAT:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getFloat($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case DOUBLE:
+                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
+                        .addStatement("target.$L = bundle.getDouble($S)", varName, intentValue.key())
+                        .endControlFlow();
+                break;
+
+            case ARRAY:
+                break;
+
+            case DECLARED:
+                break;
+
+        }
+
+
+    }
+
 
     private void processorClickResponder(Element element, MethodSpec.Builder methodBuilder) {
         ExecutableElement executableElement = (ExecutableElement) element;
@@ -285,18 +428,15 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
 
-
-
-
     private void processorLongClickResponder(Element element, MethodSpec.Builder methodBuilder) {
         ExecutableElement executableElement = (ExecutableElement) element;
 
         LongClickResponder longClickResponder = executableElement.getAnnotation(LongClickResponder.class);
         int ids[] = longClickResponder.id();
         String idStrs[] = longClickResponder.idStr();
-        if(ids.length>0) {
-            for(int id:ids){
-                if(id<=0){
+        if (ids.length > 0) {
+            for (int id : ids) {
+                if (id <= 0) {
                     continue;
                 }
 

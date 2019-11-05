@@ -25,11 +25,7 @@ public class ViewInjector {
         Constructor constructor = findBindingConstructorForClass(target.getClass());
         try {
             constructor.newInstance(target, view);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -42,9 +38,7 @@ public class ViewInjector {
                 constructor = bindingClass.getDeclaredConstructor(cls, View.class);
                 constructor.setAccessible(true);
                 BINDINGS.put(cls, constructor);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

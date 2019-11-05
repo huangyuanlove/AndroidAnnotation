@@ -1,14 +1,17 @@
 package com.huangyuanlove.view_inject_compiler;
 
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.processing.Filer;
+import javax.lang.model.element.Modifier;
 
 /**
  * Description:
@@ -71,6 +74,8 @@ public class TypeSpecWrapper {
 
     public TypeSpecWrapper(TypeSpec.Builder typeSpecBuilder,String packageName){
         this.typeSpecBuilder = typeSpecBuilder;
+        FieldSpec fieldSpec = FieldSpec.builder(File.class, "mRef", Modifier.PRIVATE).build();
+        typeSpecBuilder.addField(fieldSpec);
         this.packageName = packageName;
         methodBuildMap = new HashMap<>();
     }
