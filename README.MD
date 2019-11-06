@@ -2,13 +2,12 @@
 
 #### 引用
 
-目前IntentValue注解仍在测试，尚未包含在下面开源库中
 
 ``` gradle
-    implementation 'com.huangyuanlove:view-inject-api:0.0.2'
-    implementation 'com.huangyuanlove:view-inject-annotation:0.0.2'
-    annotationProcessor 'com.huangyuanlove:view-inject-compile:0.0.2'
-//只包含了BindView、ClickResponder、LongClickResponder注解
+    implementation 'com.huangyuanlove:view-inject-api:0.0.3'
+    implementation 'com.huangyuanlove:view-inject-annotation:0.0.3'
+    annotationProcessor 'com.huangyuanlove:view-inject-compile:0.0.3'
+//只包含了BindView、ClickResponder、LongClickResponder、IntentValue注解
 ```
 
 #### @BindView
