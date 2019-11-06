@@ -40,6 +40,8 @@ public class TestViewInjectFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_test_view_inject,container,false);
         ViewInjector.bind(this,view);
         BundleInjector.parseBundle(this);
+
+        getArguments()
         return view;
     }
 }

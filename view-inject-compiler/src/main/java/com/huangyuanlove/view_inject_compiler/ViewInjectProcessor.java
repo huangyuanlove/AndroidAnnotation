@@ -256,9 +256,12 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
 
             methodBuilder = MethodSpec.methodBuilder("parseBundle")
-                    .addModifiers(Modifier.PUBLIC)
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .addParameter(ClassName.get(typeElement.asType()), "target")
                     .addParameter(parameterSpec)
+                    .beginControlFlow("if(bundle == null)")
+                    .addStatement("return ")
+                    .endControlFlow()
                     .returns(void.class);
 
         }
@@ -308,66 +311,145 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
         IntentValue intentValue = variableElement.getAnnotation(IntentValue.class);
 
-        switch (element.asType().getKind()) {
-            case BOOLEAN:
 
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getBoolean($S)", varName, intentValue.key())
-                        .endControlFlow();
+        methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key());
+
+        if (intentValue.type() == IntentValue.DEFAULT_TYPE) {
 
 
-                break;
+            switch (element.asType().getKind()) {
+                case BOOLEAN:
+                    methodBuilder.addStatement("target.$L = bundle.getBoolean($S)", varName, intentValue.key());
+                    break;
 
 
-            case SHORT:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getShort($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case SHORT:
+                    methodBuilder.addStatement("target.$L = bundle.getShort($S)", varName, intentValue.key());
+                    break;
 
-            case BYTE:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getByte($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case BYTE:
+                    methodBuilder.addStatement("target.$L = bundle.getByte($S)", varName, intentValue.key());
+                    break;
 
-            case INT:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getInt($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case INT:
+                    methodBuilder.addStatement("target.$L = bundle.getInt($S)", varName, intentValue.key());
+                    break;
 
-            case CHAR:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getChar($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case CHAR:
+                    methodBuilder.addStatement("target.$L = bundle.getChar($S)", varName, intentValue.key());
+                    break;
 
-            case LONG:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getLong($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case LONG:
+                    methodBuilder.addStatement("target.$L = bundle.getLong($S)", varName, intentValue.key());
+                    break;
 
-            case FLOAT:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getFloat($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case FLOAT:
+                    methodBuilder.addStatement("target.$L = bundle.getFloat($S)", varName, intentValue.key());
+                    break;
 
-            case DOUBLE:
-                methodBuilder.beginControlFlow("if(bundle.containsKey($S))", intentValue.key())
-                        .addStatement("target.$L = bundle.getDouble($S)", varName, intentValue.key())
-                        .endControlFlow();
-                break;
+                case DOUBLE:
+                    methodBuilder.addStatement("target.$L = bundle.getDouble($S)", varName, intentValue.key());
+                    break;
 
-            case ARRAY:
-                break;
+                case ARRAY:
+                    switch (element.asType().toString()) {
+                        case "byte[]":
+                            methodBuilder.addStatement("target.$L = bundle.getByteArray($S)", varName, intentValue.key());
+                            break;
+                        case "short[]":
 
-            case DECLARED:
-                break;
+                            methodBuilder.addStatement("target.$L = bundle.getShortArray($S)", varName, intentValue.key());
+                            break;
+                        case "boolean[]":
+                            methodBuilder.addStatement("target.$L = bundle.getBooleanArray($S)", varName, intentValue.key());
+                            break;
+                        case "int[]":
+                            methodBuilder.addStatement("target.$L = bundle.getIntArray($S)", varName, intentValue.key());
+                            break;
+                        case "long[]":
+                            methodBuilder.addStatement("target.$L = bundle.getLongArray($S)", varName, intentValue.key());
+                            break;
+                        case "char[]":
+                            methodBuilder.addStatement("target.$L = bundle.getCharArray($S)", varName, intentValue.key());
+                            break;
+                        case "java.lang.CharSequence[]":
+                            methodBuilder.addStatement("target.$L = bundle.getCharSequenceArray($S)", varName, intentValue.key());
+                            break;
+                        case "float[]":
+                            methodBuilder.addStatement("target.$L = bundle.getFloatArray($S)", varName, intentValue.key());
+                            break;
+                        case "double[]":
+                            methodBuilder.addStatement("target.$L = bundle.getDoubleArray($S)", varName, intentValue.key());
+                            break;
+                        case "java.lang.String[]":
+                            methodBuilder.addStatement("target.$L = bundle.getStringArray($S)", varName, intentValue.key());
+                            break;
+                        default:
+                            methodBuilder.addStatement("target.$L = ($L) bundle.getParcelableArray($S)", varName, varType, intentValue.key());
+                            break;
 
+                    }
+                    break;
+
+                case DECLARED:
+                    switch (element.asType().toString()) {
+                        case "java.util.ArrayList<java.lang.Integer>":
+                            methodBuilder.addStatement("target.$L = bundle.getIntegerArrayList($S)", varName, intentValue.key());
+                            break;
+                        case "java.lang.CharSequence":
+
+                            methodBuilder.addStatement("target.$L = bundle.getCharSequence($S)", varName, intentValue.key());
+                            break;
+                        case "java.util.ArrayList<java.lang.CharSequence>":
+                            methodBuilder.addStatement("target.$L = bundle.getCharSequenceArrayList($S)", varName, intentValue.key());
+                            break;
+                        case "java.lang.String":
+                            methodBuilder.addStatement("target.$L = bundle.getString($S)", varName, intentValue.key());
+                            break;
+                        case "java.util.ArrayList<java.lang.String>":
+                            methodBuilder.addStatement("target.$L = bundle.getStringArrayList($S)", varName, intentValue.key());
+                            break;
+                        default:
+
+                            break;
+                    }
+                    break;
+            }
+        } else {
+            switch (intentValue.type()) {
+                case IntentValue.SERIALIZABLE_OBJECT:
+                    methodBuilder.addStatement("target.$L  = ($L) bundle.getSerializable($S)", varName, varType, intentValue.key());
+                    break;
+                case IntentValue.PARCELABLE_OBJECT:
+                    methodBuilder.addStatement("target.$L  = bundle.getParcelable($S)", varName, intentValue.key());
+                    break;
+                case IntentValue.PARCELABLE_ARRAY_OBJECT:
+//                    Parcelable[] temp = bundle.getParcelableArray("parcelableObjects");
+//                    if(temp!=null && temp.length>0){
+//                        target.parcelableObjects = new com.example.huangyuan.testandroid.view.ParcelableObject[temp.length];
+//                        for(int i = 0 ; i < temp.length;i++){
+//                            target.parcelableObjects[i] = (com.example.huangyuan.testandroid.view.ParcelableObject)temp[i];
+//                        }
+//                    }
+//
+
+                    methodBuilder.addStatement(" android.os.Parcelable[] temp = bundle.getParcelableArray($S)",intentValue.key());
+                    methodBuilder.beginControlFlow("if(temp!=null && temp.length>0)");
+                    methodBuilder.addStatement("target.$L = new $L[temp.length]",varName,varType.substring(0,varType.length()-2));
+                    methodBuilder.beginControlFlow("for(int i = 0 ; i < temp.length;i++)");
+                    methodBuilder.addStatement("target.$L[i] = ($L) temp[i]",varName,varType.substring(0,varType.length()-2));
+                    methodBuilder.endControlFlow();
+                    methodBuilder.endControlFlow();
+
+
+                    break;
+                case IntentValue.PARCELABLE_ARRAYLIST_OBJECT:
+                    methodBuilder.addStatement("target.$L  = bundle.getParcelableArrayList($S)", varName, intentValue.key());
+
+                    break;
+            }
         }
+        methodBuilder.endControlFlow();
 
 
     }

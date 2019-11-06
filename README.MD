@@ -68,13 +68,43 @@ Adapter示例: `ListViewAdapter`
 支持同一个方法绑定到多个view
 
 
+#### IntentValue
+用来代替 getIntent().getXXX 或者Fragment中的getArguments().getXXX
+使用方式：
+``` java
+@IntentValue(key = "String")
+String value = "default"
 
+@IntentValue(key = "parcelableObject",type = IntentValue.PARCELABLE_OBJECT)
+ParcelableObject parcelableObject;
+
+
+@IntentValue(key = "parcelableObjects" ,type = IntentValue.PARCELABLE_ARRAY_OBJECT)
+ParcelableObject[] parcelableObjects;
+
+@IntentValue(key = "parcelableObjectArrayList",type = IntentValue.PARCELABLE_ARRAYLIST_OBJECT)
+ArrayList<ParcelableObject>  parcelableObjectArrayList;
+
+
+@IntentValue(key = "serializableObject",type = IntentValue.SERIALIZABLE_OBJECT)
+UnParcelableObject serializableObject;
+
+```
+注意：
+如果传递的是Parcelable对象，type声明为`IntentValue.PARCELABLE_OBJECT`
+如果传递的是Parcelable对象数组，type声明为`IntentValue.PARCELABLE_ARRAY_OBJECT`
+如果传递的是Parcelable对象ArrayList，type声明为`IntentValue.PARCELABLE_ARRAYLIST_OBJECT`
+如果传递的是序列化对象(实现了Serializable接口),type声明为`IntentValue.SERIALIZABLE_OBJECT`
+在字段使用前(一般是在Activity的onCreate或者Fragment的onCreateView方法中)调用`BundleInjector.parseBundle(this);`
+
+----
 
 TODO
 
-- [x] findViewById
-- [x] 替换为javapoet https://github.com/square/javapoet
-- [x] 点击事件、长按事件
+- [x] BindView 代替  findViewById 
+- [x] ClickResponder 代替 setOnClickListener
+- [x] LongClickResponder 代替 setOnLongClickListener
+- [x] IntentValue 代替 getIntent().getXXX
 - [ ] 广播
 - [ ] 路由
 - [ ] 动态权限
