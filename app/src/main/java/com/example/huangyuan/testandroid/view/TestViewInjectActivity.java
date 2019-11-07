@@ -72,7 +72,7 @@ public class TestViewInjectActivity extends AppCompatActivity {
     }
 
 
-    @BroadcastResponder(action = {"action_other_one","action_other_one"},type = BroadcastResponder.GLOBAL_BROADCAST)
+    @BroadcastResponder(action = {"action_other_one","action_other_two"},type = BroadcastResponder.GLOBAL_BROADCAST)
     public void onReceiveBroadcastOther(Context context, Intent intent){
         Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
     }

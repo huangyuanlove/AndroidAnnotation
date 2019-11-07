@@ -278,10 +278,12 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
                     if(BroadcastResponder.LOCAL_BROADCAST == type){
                         localBroadCast.put(action,element.getSimpleName().toString());
+                        System.out.println("LOCAL_" + action);
 
 
                     }else if(BroadcastResponder.GLOBAL_BROADCAST == type){
                         globalBroadCast.put(action,element.getSimpleName().toString());
+                        System.out.println("GLOBAL" + action);
                     }
 
                 }
@@ -292,7 +294,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
             if(globalBroadCast.size()>0){
                 CodeBlock.Builder caseBlockBuilder = CodeBlock.builder().beginControlFlow("switch (intent.getAction())");
-                for(Map.Entry<String,String> entry : localBroadCast.entrySet()){
+                for(Map.Entry<String,String> entry : globalBroadCast.entrySet()){
                     caseBlockBuilder.add("case $S:\n",entry.getKey())
                             .addStatement("target.$L(context,intent)",entry.getValue());
                 }
@@ -338,7 +340,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
                         .build();
                 methodBuilder.addStatement("$T localBroadcastReceiver = $L",broadcastReceiverClassName,innerTypeSpec);
                 methodBuilder.addStatement(" androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(target).registerReceiver(localBroadcastReceiver,intentFilter)");
-
+                methodBuilder.addStatement("hashMap.put($L,localBroadcastReceiver)",BroadcastResponder.LOCAL_BROADCAST);
             }
 
             methodBuilder.addStatement("return hashMap");

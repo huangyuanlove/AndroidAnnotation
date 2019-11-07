@@ -3,9 +3,6 @@ package com.huangyuanlove.view_inject_api;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
