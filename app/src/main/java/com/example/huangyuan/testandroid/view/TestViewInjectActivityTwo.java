@@ -1,5 +1,6 @@
 package com.example.huangyuan.testandroid.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.BindView;
@@ -203,6 +205,25 @@ public class TestViewInjectActivityTwo extends AppCompatActivity {
         show_parcelableObjectArrayList.setText(parcelableObjectArrayList==null?"null":parcelableObjectArrayList.toString());
 
         show_unParcelableObject.setText(unParcelableObject+"");
+
+
+        buttonOne.setText("本地广播");
+        buttonOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LocalBroadcastManager.getInstance(TestViewInjectActivityTwo.this).sendBroadcast(new Intent("com.huangyuanblog"));
+
+            }
+        });
+
+        buttonTwo.setText("全局广播");
+        buttonTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                  sendBroadcast(new Intent("com.huangyuanlove"));
+            }
+        });
+
 
 
     }

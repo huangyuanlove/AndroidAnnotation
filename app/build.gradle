@@ -42,6 +42,7 @@ dependencies {
     implementation depend['viewInjectAnnotation']
     implementation depend['viewInjectApi']
     annotationProcessor depend['viewInjectCompile']
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 
 
 }

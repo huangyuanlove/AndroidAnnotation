@@ -41,6 +41,7 @@ public class TestViewInjectFragment extends Fragment {
         ViewInjector.bind(this,view);
         BundleInjector.parseBundle(this);
 
+
         return view;
     }
 }

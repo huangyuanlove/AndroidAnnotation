@@ -1,5 +1,7 @@
 package com.example.huangyuan.testandroid.view;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,15 +10,19 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.BindView;
+import com.huangyuanlove.view_inject_annotation.BroadcastResponder;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_annotation.LongClickResponder;
+import com.huangyuanlove.view_inject_api.BroadcastInject;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TestViewInjectActivity extends AppCompatActivity {
@@ -32,13 +38,14 @@ public class TestViewInjectActivity extends AppCompatActivity {
     protected String a1;
     @IntentValue(key = "a2")
     protected String a2;
-
+    HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_view_inject);
         ViewInjector.bind(this);
+        broadcastReceiverHashMap = BroadcastInject.registerReceiver(this);
 
 
         ((Button) findViewById(getResources().getIdentifier("test_view_inject_one", "id", getPackageName()))).setText("asdf");
@@ -49,8 +56,32 @@ public class TestViewInjectActivity extends AppCompatActivity {
         }
 
         ListViewAdapter adapter = new ListViewAdapter(data, this);
-//        listView.setAdapter(adapter);
+        listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+
+
+
+
+
+    }
+
+    @BroadcastResponder(action = {"com.huangyuanlove","com.huangyuanblog",Intent.ACTION_AIRPLANE_MODE_CHANGED})
+    public void onReceiveBroadcast(Context context, Intent intent){
+        Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
+    }
+
+
+    @BroadcastResponder(action = {"action_other_one","action_other_one"},type = BroadcastResponder.GLOBAL_BROADCAST)
+    public void onReceiveBroadcastOther(Context context, Intent intent){
+        Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
+    @ClickResponder(id = R.id.to_fragment)
+    public void toFragment(View v){
 
     }
 
@@ -150,4 +181,19 @@ public class TestViewInjectActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(broadcastReceiverHashMap!=null){
+            if(broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST) !=null){
+
+                unregisterReceiver(broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST));
+            }
+
+            if(broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST) !=null){
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST));
+            }
+
+        }
+    }
 }
