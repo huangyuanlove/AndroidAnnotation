@@ -165,10 +165,10 @@ public class ViewInjectProcessor extends AbstractProcessor {
             typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder, pkgName);
             typeSpecWrapperMap.put(typeElement, typeSpecWrapper);
         }
-        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder(MethodSpec.constructorBuilder().build().name);
+        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("bind");
         if (methodBuilder == null) {
-            methodBuilder = MethodSpec.constructorBuilder()
-                    .addModifiers(Modifier.PUBLIC)
+            methodBuilder = MethodSpec.methodBuilder("bind")
+                    .addModifiers(Modifier.PUBLIC,Modifier.STATIC)
                     .addParameter(ClassName.get(typeElement.asType()), "target", Modifier.FINAL)
                     .addParameter(ClassName.get("android.view", "View"), "view")
                     .addStatement("int resourceID = 0");
@@ -424,14 +424,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
                     methodBuilder.addStatement("target.$L  = bundle.getParcelable($S)", varName, intentValue.key());
                     break;
                 case IntentValue.PARCELABLE_ARRAY_OBJECT:
-//                    Parcelable[] temp = bundle.getParcelableArray("parcelableObjects");
-//                    if(temp!=null && temp.length>0){
-//                        target.parcelableObjects = new com.example.huangyuan.testandroid.view.ParcelableObject[temp.length];
-//                        for(int i = 0 ; i < temp.length;i++){
-//                            target.parcelableObjects[i] = (com.example.huangyuan.testandroid.view.ParcelableObject)temp[i];
-//                        }
-//                    }
-//
 
                     methodBuilder.addStatement(" android.os.Parcelable[] temp = bundle.getParcelableArray($S)",intentValue.key());
                     methodBuilder.beginControlFlow("if(temp!=null && temp.length>0)");

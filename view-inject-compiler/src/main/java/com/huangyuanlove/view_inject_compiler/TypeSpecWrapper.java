@@ -74,8 +74,6 @@ public class TypeSpecWrapper {
 
     public TypeSpecWrapper(TypeSpec.Builder typeSpecBuilder,String packageName){
         this.typeSpecBuilder = typeSpecBuilder;
-        FieldSpec fieldSpec = FieldSpec.builder(File.class, "mRef", Modifier.PRIVATE).build();
-        typeSpecBuilder.addField(fieldSpec);
         this.packageName = packageName;
         methodBuildMap = new HashMap<>();
     }

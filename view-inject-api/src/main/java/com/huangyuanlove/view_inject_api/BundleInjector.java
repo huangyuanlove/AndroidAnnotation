@@ -16,7 +16,7 @@ public class BundleInjector {
 
     public static void parseBundle(Activity activity) {
         try {
-            Method method = findParseBundleForClass(activity.getClass(),activity.getClass());
+            Method method = findParseBundleMethodForClass(activity.getClass(),activity.getClass());
             method.invoke(null,activity,activity.getIntent()==null?null:activity.getIntent().getExtras());
         }catch (Exception e){
             e.printStackTrace();
@@ -27,7 +27,7 @@ public class BundleInjector {
 
     public static void parseBundle(Fragment fragment) {
         try {
-            Method method =findParseBundleForClass(fragment.getClass(),fragment.getClass());
+            Method method =findParseBundleMethodForClass(fragment.getClass(),fragment.getClass());
             method .invoke(null,fragment,fragment.getArguments());
 
         }catch (Exception e){
@@ -36,16 +36,12 @@ public class BundleInjector {
 
     }
 
-    private static Method findParseBundleForClass(Class<?> cls,Class clazz) {
+    private static Method findParseBundleMethodForClass(Class<?> cls,Class clazz) {
         Method parseBundle = BUNDLES.get(cls);
         if (parseBundle == null) {
             try {
                 Class<?> bindingClass = Class.forName(cls.getName() + "$ViewInjector");
                 parseBundle=   bindingClass.getDeclaredMethod("parseBundle",clazz, Bundle.class);
-//                parseBundle = bindingClass.getMethod("parseBundle",clazz, Bundle.class);
-
-
-
                 BUNDLES.put(cls, parseBundle);
             } catch (Exception e) {
                 e.printStackTrace();

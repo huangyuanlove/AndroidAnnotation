@@ -49,7 +49,7 @@ public class TestViewInjectActivity extends AppCompatActivity {
         }
 
         ListViewAdapter adapter = new ListViewAdapter(data, this);
-        listView.setAdapter(adapter);
+//        listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
     }

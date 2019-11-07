@@ -3,8 +3,7 @@ package com.huangyuanlove.view_inject_api;
 import android.app.Activity;
 import android.view.View;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,29 +14,28 @@ import java.util.Map;
  * Email: huangyuan@chunyu.me
  */
 public class ViewInjector {
-    static final Map<Class<?>, Constructor> BINDINGS = new LinkedHashMap<>();
+    static final Map<Class<?>, Method> BINDINGS = new LinkedHashMap<>();
 
     public static void bind(Activity activity) {
         bind(activity, activity.getWindow().getDecorView());
     }
 
     public static void bind(Object target, View view) {
-        Constructor constructor = findBindingConstructorForClass(target.getClass());
+        Method constructor = findBindMethodForClass(target);
         try {
-            constructor.newInstance(target, view);
+            constructor.invoke(null,target, view);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static Constructor findBindingConstructorForClass(Class<?> cls) {
-        Constructor constructor = BINDINGS.get(cls);
+    private static Method findBindMethodForClass(Object target) {
+        Method constructor = BINDINGS.get(target.getClass());
         if (constructor == null) {
             try {
-                Class<?> bindingClass = Class.forName(cls.getName() + "$ViewInjector");
-                constructor = bindingClass.getDeclaredConstructor(cls, View.class);
-                constructor.setAccessible(true);
-                BINDINGS.put(cls, constructor);
+                Class<?> bindingClass = Class.forName(target.getClass().getName() + "$ViewInjector");
+                constructor = bindingClass.getMethod("bind",target.getClass(), View.class);
+                BINDINGS.put(target.getClass(), constructor);
             } catch (Exception e) {
                 e.printStackTrace();
             }
