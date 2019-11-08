@@ -158,22 +158,6 @@ public class TestViewInjectActivityTwo extends AppCompatActivity {
         setContentView(R.layout.activity_test_view_inject);
         ViewInjector.bind(this);
         BundleInjector.parseBundle(this);
-        buttonOne.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(TestViewInjectActivityTwo.this, "点击", Toast.LENGTH_SHORT).show();
-            }
-        });
-        buttonTwo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(TestViewInjectActivityTwo.this, "点击", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        UnParcelableObject object1 = (UnParcelableObject) getIntent().getSerializableExtra("unParcelableObject");
-        UnParcelableObject object2 = (UnParcelableObject) getIntent().getExtras().getSerializable("unParcelableObject");
-
 
         showBoolean.setText(aBoolean+"");
         showBooleans.setText(booleans+"");

@@ -3,6 +3,7 @@ package com.example.huangyuan.testandroid.view;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,10 +35,6 @@ public class TestViewInjectActivity extends AppCompatActivity {
     @BindView(id = R.id.list_view)
     protected ListView listView;
 
-    @IntentValue(key = "a1")
-    protected String a1;
-    @IntentValue(key = "a2")
-    protected String a2;
     HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap;
 
     @Override
@@ -47,8 +44,6 @@ public class TestViewInjectActivity extends AppCompatActivity {
         ViewInjector.bind(this);
         broadcastReceiverHashMap = BroadcastInject.registerReceiver(this);
 
-
-        ((Button) findViewById(getResources().getIdentifier("test_view_inject_one", "id", getPackageName()))).setText("asdf");
 
         List<String> data = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -66,16 +61,18 @@ public class TestViewInjectActivity extends AppCompatActivity {
 
     }
 
-    @BroadcastResponder(action = {"com.huangyuanlove","com.huangyuanblog",Intent.ACTION_AIRPLANE_MODE_CHANGED})
+    @BroadcastResponder(action = {"com.huangyuanblog","com.huangyuanblog.www"})
     public void onReceiveBroadcast(Context context, Intent intent){
         Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
     }
 
 
-    @BroadcastResponder(action = {"action_other_one","action_other_two"},type = BroadcastResponder.GLOBAL_BROADCAST)
+    @BroadcastResponder(action = {"com.huangyuanlove",Intent.ACTION_AIRPLANE_MODE_CHANGED},type = BroadcastResponder.GLOBAL_BROADCAST)
     public void onReceiveBroadcastOther(Context context, Intent intent){
         Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
     }
+
+
 
 
 

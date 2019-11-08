@@ -111,7 +111,7 @@ TODO
 - [x] ClickResponder 代替 setOnClickListener
 - [x] LongClickResponder 代替 setOnLongClickListener
 - [x] IntentValue 代替 getIntent().getXXX
-- [ ] 广播
+- [x] 广播
 - [ ] 路由
 - [ ] 动态权限
 

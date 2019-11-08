@@ -31,7 +31,7 @@ public class BroadcastInject {
         if (registerReceiver == null) {
             try {
                 Class<?> bindingClass = Class.forName(cls.getName() + "$ViewInjector");
-                registerReceiver=   bindingClass.getDeclaredMethod("registerReceiver", HashMap.class);
+                registerReceiver=   bindingClass.getDeclaredMethod("registerReceiver",cls);
                 BROADCAST_MAP.put(cls, registerReceiver);
             } catch (Exception e) {
                 e.printStackTrace();
