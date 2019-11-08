@@ -103,6 +103,52 @@ UnParcelableObject serializableObject;
 
 在字段使用前(一般是在Activity的onCreate或者Fragment的onCreateView方法中)调用`BundleInjector.parseBundle(this);`
 
+
+#### @BroadcastResponder
+广播分为本地广播和全局广播，注解接收广播接收器之后，需要自己去解注册
+使用方式
+``` java
+//在 OnCreate 中注册广播接收器
+HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap = BroadcastInject.registerReceiver(this);
+
+//使用注解定义接收广播的action 以及对应的回调方法
+
+@BroadcastResponder(action = {"com.huangyuanblog","com.huangyuanblog.www"})
+public void onReceiveBroadcast(Context context, Intent intent){
+    Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
+}
+
+//type默认本地广播，接收全局广播需要指定type = BroadcastResponder.GLOBAL_BROADCAST
+@BroadcastResponder(action = {"com.huangyuanlove",Intent.ACTION_AIRPLANE_MODE_CHANGED},type = BroadcastResponder.GLOBAL_BROADCAST)
+public void onReceiveBroadcastOther(Context context, Intent intent){
+    Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
+}
+
+//在 onDestroy 中解注册
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    if(broadcastReceiverHashMap!=null){
+        if(broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST) !=null){
+
+            unregisterReceiver(broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST));
+        }
+
+        if(broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST) !=null){
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST));
+        }
+
+    }
+}
+
+
+```
+需要注意的是，默认的广播接收器是本地广播，如果需要接收全局广播,比如打开飞行模式等，需要指定`type = BroadcastResponder.GLOBAL_BROADCAST`
+千万别忘记解注册
+
+
+
 ----
 
 TODO
