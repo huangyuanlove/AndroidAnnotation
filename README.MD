@@ -4,10 +4,10 @@
 
 
 ``` gradle
-    implementation 'com.huangyuanlove:view-inject-api:0.0.3'
-    implementation 'com.huangyuanlove:view-inject-annotation:0.0.3'
-    annotationProcessor 'com.huangyuanlove:view-inject-compile:0.0.3'
-//只包含了BindView、ClickResponder、LongClickResponder、IntentValue注解
+    implementation 'com.huangyuanlove:view-inject-api:0.0.4'
+    implementation 'com.huangyuanlove:view-inject-annotation:0.0.4'
+    annotationProcessor 'com.huangyuanlove:view-inject-compile:0.0.4'
+//只包含了BindView、ClickResponder、LongClickResponder、IntentValue、BroadcastResponder注解
 ```
 
 #### @BindView
