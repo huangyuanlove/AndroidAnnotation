@@ -13,10 +13,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
-import com.squareup.javapoet.WildcardTypeName;
 
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -233,36 +230,50 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
 
+    private MethodSpec.Builder generateRegisterReceiverMethodBuilder(TypeElement typeElement){
+
+        TypeSpecWrapper typeSpecWrapper = generateTypeSpecWrapper(typeElement);
+        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("registerReceiver");
+        ClassName intentFilterClassName = ClassName.bestGuess("android.content.IntentFilter");
+        ClassName broadcastReceiverClassName = ClassName.bestGuess("android.content.BroadcastReceiver");
+
+
+        if(methodBuilder == null){
+
+
+            TypeName methodReturns = ParameterizedTypeName.get(
+                    ClassName.get(HashMap.class),
+                    ClassName.get(Integer.class),
+                    broadcastReceiverClassName
+            );
+
+
+            methodBuilder = MethodSpec.methodBuilder("registerReceiver")
+                    .addParameter(ClassName.get(typeElement.asType()), "target")
+                    .addModifiers(Modifier.PUBLIC,Modifier.STATIC)
+                    .addStatement("HashMap<Integer,BroadcastReceiver> hashMap = new HashMap<>()")
+
+                    .addStatement("$T localBroadcastFilter = new $T()",intentFilterClassName,intentFilterClassName)
+                    .addStatement("$T globalBroadcastFilter = new $T()",intentFilterClassName,intentFilterClassName)
+                    .returns(methodReturns);
+            typeSpecWrapper.putMethodBuilder(methodBuilder);
+        }
+        return methodBuilder;
+    }
+
+
     private void generateBroadcastResponderCode() {
         for (TypeElement typeElement : broadCastResponderMap.keySet()) {
-            TypeSpecWrapper typeSpecWrapper = generateTypeSpecWrapper(typeElement);
-            MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("registerReceiver");
 
-            ClassName intentFilterClassName = ClassName.bestGuess("android.content.IntentFilter");
+            MethodSpec.Builder methodBuilder =   generateRegisterReceiverMethodBuilder(typeElement);
+
+
             ClassName broadcastReceiverClassName = ClassName.bestGuess("android.content.BroadcastReceiver");
             ClassName contextClassName = ClassName.bestGuess("android.content.Context");
             ClassName intentClassName = ClassName.bestGuess("android.content.Intent");
-
-            if(methodBuilder == null){
-
-
-                TypeName methodReturns = ParameterizedTypeName.get(
-                        ClassName.get(HashMap.class),
-                        ClassName.get(Integer.class),
-                        broadcastReceiverClassName
-                );
+            ClassName localBroadcastManagerClassName = ClassName.bestGuess("androidx.localbroadcastmanager.content.LocalBroadcastManager");
 
 
-                methodBuilder = MethodSpec.methodBuilder("registerReceiver")
-                        .addParameter(ClassName.get(typeElement.asType()), "target")
-                        .addModifiers(Modifier.PUBLIC,Modifier.STATIC)
-                        .addStatement("HashMap<Integer,BroadcastReceiver> hashMap = new HashMap<>()")
-
-                        .addStatement("$T localBroadcastFilter = new $T()",intentFilterClassName,intentFilterClassName)
-                        .addStatement("$T globalBroadcastFilter = new $T()",intentFilterClassName,intentFilterClassName)
-                        .returns(methodReturns);
-                typeSpecWrapper.putMethodBuilder(methodBuilder);
-            }
 
             List<Element> elements = broadCastResponderMap.get(typeElement);
 
@@ -331,6 +342,8 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
 
                 caseBlockBuilder.endControlFlow();
+
+
                 MethodSpec broadcastReceiverMethod = MethodSpec.methodBuilder("onReceive")
                         .addModifiers(Modifier.PUBLIC)
                         .addParameter(contextClassName,"context")
@@ -343,7 +356,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
                         .addMethod(broadcastReceiverMethod)
                         .build();
                 methodBuilder.addStatement("$T localBroadcastReceiver = $L",broadcastReceiverClassName,innerTypeSpec);
-                methodBuilder.addStatement(" androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(target).registerReceiver(localBroadcastReceiver,localBroadcastFilter)");
+                methodBuilder.addStatement("$T.getInstance(target).registerReceiver(localBroadcastReceiver,localBroadcastFilter)",localBroadcastManagerClassName);
                 methodBuilder.addStatement("hashMap.put($L,localBroadcastReceiver)",BroadcastResponder.LOCAL_BROADCAST);
             }
 
@@ -369,48 +382,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
 
-    private MethodSpec.Builder generateRegisterReceiverMethodBuilder(TypeElement typeElement) {
-        TypeSpecWrapper typeSpecWrapper = generateTypeSpecWrapper(typeElement);
-        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("registerReceiver");
-        if(methodBuilder == null){
-            ClassName hashMap = ClassName.get("java.util","HashMap");
-            ClassName intentFilter = ClassName.get("android.content","IntentFilter");
 
-
-            methodBuilder = MethodSpec.methodBuilder("registerReceiver")
-                    .addParameter(ClassName.get(typeElement.asType()), "target")
-                    .addModifiers(Modifier.PUBLIC,Modifier.STATIC)
-                    .addStatement("$T actions = new $T()",hashMap,hashMap)
-                    .addStatement("$T intentFilter = new $T()",intentFilter,intentFilter)
-                    .returns(ClassName.get("android.content","BroadcastReceiver"));
-
-
-            ClassName broadcastReceiverClass =ClassName.bestGuess("android.content.BroadcastReceiver");
-
-
-
-
-            MethodSpec broadcastReceiverMethod = MethodSpec.methodBuilder("onReceive")
-                    .addModifiers(Modifier.PUBLIC)
-                    .addParameter(ClassName.get("android.content","Context"),"context")
-                    .addParameter(ClassName.get("android.content","Intent"),"intent")
-                    .returns(void.class)
-                    .build();
-            TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
-                    .addSuperinterface(broadcastReceiverClass)
-                    .addMethod(broadcastReceiverMethod)
-                    .build();
-
-
-            methodBuilder.addStatement("$T broadcastReceiver = $L",broadcastReceiverClass,innerTypeSpec);
-
-            methodBuilder.addStatement("target.registerReceiver(broadcastReceiver,intentFilter)");
-            typeSpecWrapper.putMethodBuilder(methodBuilder);
-        }
-
-        return methodBuilder;
-
-    }
 
 
     private MethodSpec.Builder generateBindMethodBuilder(TypeElement typeElement) {
@@ -550,10 +522,8 @@ public class ViewInjectProcessor extends AbstractProcessor {
         ExecutableElement executableElement = (ExecutableElement) element;
 
         LongClickResponder longClickResponder = executableElement.getAnnotation(LongClickResponder.class);
-        int ids[] = longClickResponder.id();
-        String idStrs[] = longClickResponder.idStr();
-        if (ids.length > 0) {
-            for (int id : ids) {
+        if (longClickResponder.id().length > 0) {
+            for (int id : longClickResponder.id()) {
                 if (id <= 0) {
                     continue;
                 }
@@ -577,9 +547,9 @@ public class ViewInjectProcessor extends AbstractProcessor {
         }
 
 
-        if (idStrs.length > 0) {
+        if (longClickResponder.idStr().length > 0) {
 
-            for (String idStr : idStrs) {
+            for (String idStr : longClickResponder.idStr()) {
                 if (idStr == null || idStr.length() <= 0) {
                     continue;
                 }
@@ -747,33 +717,8 @@ public class ViewInjectProcessor extends AbstractProcessor {
         }
         methodBuilder.endControlFlow();
 
-
     }
 
-    private void processorBroadcastResponder(Element element, MethodSpec.Builder methodBuilder) {
-
-        ExecutableElement executableElement = (ExecutableElement) element;
-        BroadcastResponder broadcastResponder = executableElement.getAnnotation(BroadcastResponder.class);
-        int type = broadcastResponder.type();
-        String[] actions = broadcastResponder.action();
-        for(String action:actions){
-            System.out.println(action);
-            methodBuilder.addStatement("intentFilter.addAction(($S))",action);
-        }
-
-
-
-
-
-
-        if(BroadcastResponder.LOCAL_BROADCAST == type){
-
-
-        }else if(BroadcastResponder.GLOBAL_BROADCAST == type){
-
-        }
-
-    }
 
 
 }
