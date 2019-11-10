@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 public @interface RouterModule {
     String host();
 
-    String schema() default "app";
+    String schema() default "App";
 }
