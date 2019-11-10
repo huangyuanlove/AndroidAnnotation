@@ -9,17 +9,13 @@ import com.huangyuanlove.view_inject_annotation.RouterModule;
 import com.huangyuanlove.view_inject_annotation.RouterPath;
 
 @RouterModule(host = "ext_lib",schema = "App")
-public class EXTProvider {
+public class EXTProviderOne {
 
-    @RouterPath(value = "main_activity")
+    @RouterPath(value = "main_activity_one")
     public void startMain(Context context, Bundle bundle){
         Intent intent = new Intent(context,EXT_MainActivity.class);
-       intent.putExtras(bundle);
-       context.startActivity(intent);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
     }
 
-
-    public void testMethod(Context context){
-
-    }
 }
