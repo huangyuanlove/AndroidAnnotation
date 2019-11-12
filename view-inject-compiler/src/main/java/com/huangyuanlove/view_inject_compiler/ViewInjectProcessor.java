@@ -57,8 +57,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
         set.add(LongClickResponder.class.getCanonicalName());
         set.add(IntentValue.class.getCanonicalName());
         set.add(BroadcastResponder.class.getCanonicalName());
-//        set.add(RouterModule.class.getCanonicalName());
-//        set.add(RouterPath.class.getCanonicalName());
         return set;
     }
 
@@ -87,7 +85,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
         Set<? extends Element> onLongClickSet = roundEnvironment.getElementsAnnotatedWith(LongClickResponder.class);
         Set<? extends Element> intentValueSet = roundEnvironment.getElementsAnnotatedWith(IntentValue.class);
         Set<? extends Element> broadCastResponderSet = roundEnvironment.getElementsAnnotatedWith(BroadcastResponder.class);
-        Set<? extends Element> routerModuleSet = roundEnvironment.getElementsAnnotatedWith(RouterModule.class);
 
 
         collectBindViewInfo(bindViewSet);
@@ -95,9 +92,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
         collectLongClickResponderInfo(onLongClickSet);
         collectIntentValueInfo(intentValueSet);
         collectBroadCastResponderMapInfo(broadCastResponderSet);
-//        collectRouterModuleMapInfo(routerModuleSet);
-
-
 
         generateCode();
 
@@ -183,14 +177,8 @@ public class ViewInjectProcessor extends AbstractProcessor {
         generateIntentValueCode();
         generateBroadcastResponderCode();
 
-
-        generateRouterCode();
-
     }
 
-    private void generateRouterCode() {
-
-    }
 
 
     private void generateBindViewCode() {
