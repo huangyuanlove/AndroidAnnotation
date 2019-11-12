@@ -70,8 +70,8 @@ public class ViewInjectProcessor extends AbstractProcessor {
         set.add(LongClickResponder.class.getCanonicalName());
         set.add(IntentValue.class.getCanonicalName());
         set.add(BroadcastResponder.class.getCanonicalName());
-        set.add(RouterModule.class.getCanonicalName());
-        set.add(RouterPath.class.getCanonicalName());
+//        set.add(RouterModule.class.getCanonicalName());
+//        set.add(RouterPath.class.getCanonicalName());
         return set;
     }
 
@@ -110,7 +110,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
         collectLongClickResponderInfo(onLongClickSet);
         collectIntentValueInfo(intentValueSet);
         collectBroadCastResponderMapInfo(broadCastResponderSet);
-        collectRouterModuleMapInfo(routerModuleSet);
+//        collectRouterModuleMapInfo(routerModuleSet);
 
 
         generateCode();
@@ -180,24 +180,24 @@ public class ViewInjectProcessor extends AbstractProcessor {
             String formatType = rawType.substring(1, rawType.lastIndexOf(")"));
             String args = ((ExecutableElement) element).getParameters().toString();
 
-            constructBuilder.addStatement(
-                    "mapping.put($S + $T.METHOD, origin.getClass().getMethod($S" + getFullTypesString(formatType) + "))",
-                    path,
-                    delegate,
-                    element.getSimpleName().toString());
-
-            constructBuilder.addStatement("$T args$L=$S", String.class, i, args);
-            constructBuilder.addStatement("mapping.put($S+$T.ARGS,$S)",
-                    path,
-                    delegate,
-                    args
-            );
-            constructBuilder.addStatement("$T types$L=$S", String.class, i, formatType);
-            constructBuilder.addStatement("mapping.put($S+$T.ARGS_TYPE,$S)",
-                    path,
-                    delegate,
-                    formatType
-            ).addCode("\n");
+//            constructBuilder.addStatement(
+//                    "mapping.put($S + $T.METHOD, origin.getClass().getMethod($S" + getFullTypesString(formatType) + "))",
+//                    path,
+//                    delegate,
+//                    element.getSimpleName().toString());
+//
+//            constructBuilder.addStatement("$T args$L=$S", String.class, i, args);
+//            constructBuilder.addStatement("mapping.put($S+$T.ARGS,$S)",
+//                    path,
+//                    delegate,
+//                    args
+//            );
+//            constructBuilder.addStatement("$T types$L=$S", String.class, i, formatType);
+//            constructBuilder.addStatement("mapping.put($S+$T.ARGS_TYPE,$S)",
+//                    path,
+//                    delegate,
+//                    formatType
+//            ).addCode("\n");
         }
 
         MethodSpec invokeMethod = MethodSpec.methodBuilder("invoke")
