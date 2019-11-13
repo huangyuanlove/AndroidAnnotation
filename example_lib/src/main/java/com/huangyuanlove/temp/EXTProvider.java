@@ -8,7 +8,7 @@ import android.os.Bundle;
 import com.huangyuanlove.view_inject_annotation.RouterModule;
 import com.huangyuanlove.view_inject_annotation.RouterPath;
 
-@RouterModule(host = "ext_lib",schema = "App")
+@RouterModule(host = "ExtLib",schema = "App")
 public class EXTProvider {
 
     @RouterPath(value = "main_activity")

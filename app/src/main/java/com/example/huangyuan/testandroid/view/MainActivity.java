@@ -1,6 +1,7 @@
 package com.example.huangyuan.testandroid.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -13,6 +14,7 @@ import com.example.huangyuan.testandroid.annotation.BindView;
 import com.example.huangyuan.testandroid.annotation.OnClick;
 import com.example.huangyuan.testandroid.annotation.OnLongClick;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -29,6 +31,15 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initAnnotation();
+
+        findViewById(R.id.test_router).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                test_router(v);
+
+            }
+        });
+
     }
 
     @OnLongClick(id = R.id.test_runtime_annotation)
@@ -58,6 +69,28 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this, TestViewInjectActivity.class));
     }
 
+
+//    @OnClick(id=R.id.test_router)
+    void test_router(View v){
+        String routerName = "com.huangyuanlove.router.Appmain$$Router";
+        try{
+            Class routerClass = Class.forName(routerName);
+
+            Method invoke = routerClass.getDeclaredMethod("invoke", Context.class,String.class,Bundle.class);
+
+
+            Constructor constructor = routerClass.getConstructor();
+            constructor.setAccessible(true);
+            Object instance = constructor.newInstance();
+            invoke.invoke(instance,this,"path",new Bundle());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+
+    }
 
     private void initAnnotation() {
         Field fields[] = this.getClass().getDeclaredFields();
