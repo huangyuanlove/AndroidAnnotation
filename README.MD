@@ -148,6 +148,35 @@ protected void onDestroy() {
 千万别忘记解注册
 
 
+#### @RouterModule and @RouterPath
+
+**相同的 schema 和 host 中不要有相同的path及path对应的方法名**
+**相同的 schema 和 host 中不要有相同的path及path对应的方法名**
+**相同的 schema 和 host 中不要有相同的path及path对应的方法名**
+
+在不同的Provider中提供相同的schema和host会导致Router被覆盖，无法保证路由目标的正确性。
+
+一般以App的名字做schema，模块(module)的名字做host，目标`Activity`的类名做方法名及path。
+比如App的名字为`jandan`，模块(module)名为 `account`，目标Activity的类名为`LoginActivity`
+则对应Provider推荐这样写
+
+``` java
+
+@RouterModule(schema = "Jandan",host = "account")
+public class AccountModuleRouterProvider {
+    
+    @RouterPath(value = "login")
+    public void toLoginActivity(Context context, Bundle bundle){
+        Intent intent = new Intent(context,LoginActivity.class);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
+    
+}
+
+
+
+```
 
 ----
 

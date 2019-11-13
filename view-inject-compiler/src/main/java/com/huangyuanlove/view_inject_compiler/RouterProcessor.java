@@ -21,6 +21,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+
 @AutoService(Processor.class)
 public class RouterProcessor extends AbstractProcessor {
 
@@ -55,24 +56,21 @@ public class RouterProcessor extends AbstractProcessor {
 
         Set<? extends Element> routerModuleSet = roundEnv.getElementsAnnotatedWith(RouterModule.class);
 
-        for(Element element : routerModuleSet){
+        for (Element element : routerModuleSet) {
             RouterModule routerModule = element.getAnnotation(RouterModule.class);
-           TypeSpecWrapper typeSpecWrapper =   typeSpecWrapperMap.get(element);
-           if(typeSpecWrapper == null){
-               String packageName = elementUtils.getPackageOf(element).getQualifiedName().toString();
-               TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder("");
-
-
-               typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder,packageName);
-           }
-
+            TypeSpecWrapper typeSpecWrapper = typeSpecWrapperMap.get(element);
+            if (typeSpecWrapper == null) {
+                String packageName = elementUtils.getPackageOf(element).getQualifiedName().toString();
+                TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(routerModule.schema() + "$$" + routerModule.host());
+                typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder, packageName);
+            }
 
 
             List<? extends Element> lists = element.getEnclosedElements();
-            for(Element element1 : lists){
+            for (Element element1 : lists) {
 
                 RouterPath routerPath = element1.getAnnotation(RouterPath.class);
-                if(routerPath!=null){
+                if (routerPath != null) {
                     System.out.println(element1.getSimpleName().toString());
                     System.out.println(routerPath.value());
                 }
@@ -80,10 +78,6 @@ public class RouterProcessor extends AbstractProcessor {
             }
 
         }
-
-
-
-
 
 
         return true;
