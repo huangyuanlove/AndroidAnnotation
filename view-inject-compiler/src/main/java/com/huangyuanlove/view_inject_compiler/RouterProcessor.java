@@ -66,7 +66,7 @@ public class RouterProcessor extends AbstractProcessor {
             RouterModule routerModule = element.getAnnotation(RouterModule.class);
             TypeSpecWrapper typeSpecWrapper = typeSpecWrapperMap.get(element);
             if (typeSpecWrapper == null) {
-                String packageName = "com.huangyuanlove.router";
+                String packageName = elementUtils.getPackageOf(element).getQualifiedName().toString();
                 ClassName hashMapClassName = ClassName.bestGuess("java.util.HashMap");
                 ClassName methodClassName = ClassName.bestGuess("java.lang.reflect.Method");
                 ClassName stringClassName = ClassName.bestGuess("java.lang.String");
@@ -79,7 +79,7 @@ public class RouterProcessor extends AbstractProcessor {
                 TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(routerModule.schema() + routerModule.host() + "$$Router")
                         .addField(routerMapClassName, "routerMap", Modifier.PRIVATE)
                         .addField(targetClassName, "target");
-                typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder, packageName);
+                typeSpecWrapper = new TypeSpecWrapper(typeSpecBuilder, "com.huangyuanlove.router");
                 typeSpecWrapperMap.put(element, typeSpecWrapper);
 
 

@@ -3,7 +3,9 @@ package com.example.huangyuan.testandroid.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -39,6 +41,17 @@ public class MainActivity extends Activity {
 
             }
         });
+
+
+        Uri uri = Uri.parse("App://main/toMain");
+        Log.e("URI",uri.getScheme() +"\t" + uri.getHost() +"\t" + uri.getPath());
+
+        uri = Uri.parse("App://main/toMain/pay");
+        Log.e("URI",uri.getScheme() +"\t" + uri.getHost() +"\t" + uri.getPath());
+
+        uri = Uri.parse("App://main/toMain/pay/alipay");
+        Log.e("URI",uri.getScheme() +"\t" + uri.getHost() +"\t" + uri.getPath());
+
 
     }
 

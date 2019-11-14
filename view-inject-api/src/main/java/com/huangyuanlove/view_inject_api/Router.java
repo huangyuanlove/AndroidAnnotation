@@ -2,6 +2,9 @@ package com.huangyuanlove.view_inject_api;
 
 import android.net.Uri;
 
+import com.huangyuanlove.view_inject_api.router.RouterParamWrapper;
+
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -13,9 +16,9 @@ import java.util.Map;
 public class Router {
 
 
-    public static  interface InvokeResultListene{
+    public  interface  InvokeResultListener<T>{
         void  onError(Exception e);
-        void onSuccess();
+        void onSuccess( T t);
 
     }
 
@@ -35,7 +38,6 @@ public class Router {
         private String path;
         private Map<String,Object> paramMap;
         private Object[] paramArray;
-        private InvokeResultListene listene;
 
         private RouterBuilder(String path) {
             this.path = path;
@@ -57,21 +59,27 @@ public class Router {
             done(null);
         }
 
-        public void done(InvokeResultListene listene){
+        public void done(InvokeResultListener listener){
 
             try {
                 Uri uri  = Uri.parse(path);
                 String schema = uri.getScheme();
                 String host = uri.getHost();
+                String path = uri.getPath();
 
                 Class routerInject = Class.forName(PACKAGE_NAME +"." + schema + host +"$$Router");
+                RouterParamWrapper paramWrapper = new RouterParamWrapper();
 
-
-
+                Method invokeMethod = routerInject.getMethod("invoke",String.class,RouterParamWrapper.class);
+                invokeMethod.setAccessible(true);
+                Object result = invokeMethod.invoke(  routerInject.newInstance(),path,paramWrapper);
+                if(listener!=null){
+                    listener.onSuccess(result);
+                }
             }catch (Exception e){
 
-                if(listene!=null){
-                    listene.onError(e);
+                if(listener!=null){
+                    listener.onError(e);
                 }
 
             }
