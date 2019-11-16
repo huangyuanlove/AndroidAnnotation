@@ -65,11 +65,6 @@ public class MainActivity extends Activity {
     }
 
 
-    @OnClick(id = R.id.test_runtime_permission)
-    void testRuntimePermission(View v) {
-        startActivity(new Intent(this, TestPermissionsDispatcherActivity.class));
-    }
-
     @OnClick(id = R.id.test_view_inject)
     void testViewInject(View v) {
         startActivity(new Intent(this, TestViewInjectActivity.class));
