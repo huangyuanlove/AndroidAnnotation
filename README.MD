@@ -72,7 +72,7 @@ public void onLongClick(View v){
 支持同一个方法绑定到多个view
 
 
-### IntentValue
+### @IntentValue
 用来代替 getIntent().getXXX 或者Fragment中的getArguments().getXXX
 使用方式：
 ``` java
