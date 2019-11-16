@@ -127,8 +127,8 @@ public class RouterProcessor extends AbstractProcessor {
                         .beginControlFlow("if(method == null)")
                         .addStatement(" throw new Exception(\"can not find method which map \" +path)")
                         .endControlFlow()
-                        .addStatement("$T.invoke(method,target,paramWrapper)",routerDelegateName)
-                        .returns(void.class);
+                        .addStatement("return $T.invoke(method,target,paramWrapper)",routerDelegateName)
+                        .returns(Object.class);
 
                 typeSpecWrapper.putMethodBuilder(invokeBuilder);
 

@@ -25,4 +25,9 @@ public class MainProvider {
         context.startActivity(intent);
     }
 
+    @RouterPath(value = "/getInt")
+    public int getIntValue(String s){
+        return s.length();
+    }
+
 }

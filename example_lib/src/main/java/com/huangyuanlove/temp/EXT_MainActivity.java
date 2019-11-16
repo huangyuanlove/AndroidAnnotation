@@ -33,7 +33,6 @@ public class EXT_MainActivity extends AppCompatActivity {
     @ClickResponder(idStr = "toAppMainActivity")
     public void toAppMainActivity(View v){
 
-        HashMap<String,Object> params = new HashMap<>();
         Router.to("App://main/toMain").addParam(this,123).done(new Router.InvokeResultListener() {
             @Override
             public void onError(Exception e) {
@@ -43,6 +42,24 @@ public class EXT_MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(Object o) {
+
+            }
+        });
+
+    }
+
+    @ClickResponder(idStr = "invoke_main_method")
+    public void invokeMainMethod(View v){
+
+        Router.to("App://main/getInt").addParam("12345678").done(new Router.InvokeResultListener<Integer>() {
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(EXT_MainActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(Integer result) {
+                Toast.makeText(EXT_MainActivity.this,result+"",Toast.LENGTH_SHORT).show();
 
             }
         });
