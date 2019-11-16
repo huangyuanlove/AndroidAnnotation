@@ -148,7 +148,7 @@ protected void onDestroy() {
 千万别忘记解注册
 
 
-#### @RouterModule and @RouterPath
+### @RouterModule and @RouterPath
 
 **相同的 schema 和 host 中不要有相同的path及path对应的方法名**
 **相同的 schema 和 host 中不要有相同的path及path对应的方法名**
