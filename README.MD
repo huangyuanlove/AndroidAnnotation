@@ -1,6 +1,6 @@
 ## 编译时注解框架
 
-#### 引用
+### 引用
 
 
 ``` gradle
@@ -10,7 +10,7 @@
 //只包含了BindView、ClickResponder、LongClickResponder、IntentValue、BroadcastResponder注解
 ```
 
-#### @BindView
+### @BindView
 使用方法：
 在application module中
 ``` java
@@ -32,7 +32,7 @@ Fragment示例: `TestViewInjectFragment.java`
 Adapter示例: `ListViewAdapter`
 
 
-#### @ClickResponder
+### @ClickResponder
 在application module中
 ``` java
 @ClickResponder(id = {R.id.xxx,R.id.yyy})
@@ -53,7 +53,7 @@ public void onClickButtonTwo(View v) {
 
 ---
 
-#### @LongClickResponder
+### @LongClickResponder
 在 application module中
 ``` java
 @LongClickResponder(idStr = {"test_view_inject_two"})
@@ -72,7 +72,7 @@ public void onLongClick(View v){
 支持同一个方法绑定到多个view
 
 
-#### IntentValue
+### IntentValue
 用来代替 getIntent().getXXX 或者Fragment中的getArguments().getXXX
 使用方式：
 ``` java
@@ -104,7 +104,7 @@ UnParcelableObject serializableObject;
 在字段使用前(一般是在Activity的onCreate或者Fragment的onCreateView方法中)调用`BundleInjector.parseBundle(this);`
 
 
-#### @BroadcastResponder
+### @BroadcastResponder
 广播分为本地广播和全局广播，注解接收广播接收器之后，需要自己去解注册
 使用方式
 ``` java
