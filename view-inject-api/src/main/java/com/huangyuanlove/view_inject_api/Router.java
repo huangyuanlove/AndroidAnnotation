@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import com.huangyuanlove.view_inject_api.router.RouterParamWrapper;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class Router {
 
     public  interface  InvokeResultListener<T>{
         void  onError(Exception e);
-        void onSuccess( T t);
+        void onSuccess( T result);
 
     }
 
@@ -36,17 +37,12 @@ public class Router {
 
     public static class RouterBuilder{
         private String path;
-        private Map<String,Object> paramMap;
         private Object[] paramArray;
 
         private RouterBuilder(String path) {
             this.path = path;
         }
 
-        public  RouterBuilder  addParam(Map<String,Object> paramMap){
-            this.paramMap = paramMap;
-            return this;
-        }
 
         public RouterBuilder addParam(Object ... paramArray){
             this. paramArray = paramArray;
@@ -68,11 +64,15 @@ public class Router {
                 String path = uri.getPath();
 
                 Class routerInject = Class.forName(PACKAGE_NAME +"." + schema + host +"$$Router");
-                RouterParamWrapper paramWrapper = new RouterParamWrapper();
+                Constructor constructor =  routerInject.getConstructor();
+                constructor.setAccessible(true);
+                RouterParamWrapper paramWrapper = new RouterParamWrapper(paramArray);
+
+
 
                 Method invokeMethod = routerInject.getMethod("invoke",String.class,RouterParamWrapper.class);
                 invokeMethod.setAccessible(true);
-                Object result = invokeMethod.invoke(  routerInject.newInstance(),path,paramWrapper);
+                Object result = invokeMethod.invoke(constructor.newInstance(),path,paramWrapper);
                 if(listener!=null){
                     listener.onSuccess(result);
                 }

@@ -11,14 +11,14 @@ import com.huangyuanlove.view_inject_annotation.RouterPath;
 @RouterModule(schema = "App",host = "main")
 public class MainProvider {
 
-    @RouterPath(value = "toMain")
+    @RouterPath(value = "/toMain")
     public void startMain(Activity context, int id){
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("id",id);
         context.startActivity(intent);
     }
 
-    @RouterPath(value = "toMainWithResult")
+    @RouterPath(value = "/toMainWithResult")
     public void startMain(Activity context, String title,int requestCode){
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("title",title);

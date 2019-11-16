@@ -15,6 +15,7 @@ import com.example.huangyuan.testandroid.R;
 import com.example.huangyuan.testandroid.annotation.BindView;
 import com.example.huangyuan.testandroid.annotation.OnClick;
 import com.example.huangyuan.testandroid.annotation.OnLongClick;
+import com.huangyuanlove.temp.EXT_MainActivity;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -37,20 +38,12 @@ public class MainActivity extends Activity {
         findViewById(R.id.test_router).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                test_router(v);
+               startActivity(new Intent(MainActivity.this, EXT_MainActivity.class));
 
             }
         });
 
 
-        Uri uri = Uri.parse("App://main/toMain");
-        Log.e("URI",uri.getScheme() +"\t" + uri.getHost() +"\t" + uri.getPath());
-
-        uri = Uri.parse("App://main/toMain/pay");
-        Log.e("URI",uri.getScheme() +"\t" + uri.getHost() +"\t" + uri.getPath());
-
-        uri = Uri.parse("App://main/toMain/pay/alipay");
-        Log.e("URI",uri.getScheme() +"\t" + uri.getHost() +"\t" + uri.getPath());
 
 
     }
@@ -85,21 +78,6 @@ public class MainActivity extends Activity {
 
 //    @OnClick(id=R.id.test_router)
     void test_router(View v){
-        String routerName = "com.huangyuanlove.router.Appmain$$Router";
-        try{
-            Class routerClass = Class.forName(routerName);
-
-            Method invoke = routerClass.getDeclaredMethod("invoke", Context.class,String.class,Bundle.class);
-
-
-            Constructor constructor = routerClass.getConstructor();
-            constructor.setAccessible(true);
-            Object instance = constructor.newInstance();
-            invoke.invoke(instance,this,"path",new Bundle());
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
 
 

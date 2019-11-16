@@ -40,6 +40,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
 
     implementation depend['viewInjectAnnotation']
+    implementation depend['example_lib']
     implementation depend['viewInjectApi']
     annotationProcessor depend['viewInjectCompile']
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'

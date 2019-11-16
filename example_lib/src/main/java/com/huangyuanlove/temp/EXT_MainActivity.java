@@ -3,12 +3,14 @@ package com.huangyuanlove.temp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_api.Router;
+import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.HashMap;
 
@@ -22,6 +24,7 @@ public class EXT_MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ext__main);
+        ViewInjector.bind(this);
 
 
     }
@@ -31,14 +34,15 @@ public class EXT_MainActivity extends AppCompatActivity {
     public void toAppMainActivity(View v){
 
         HashMap<String,Object> params = new HashMap<>();
-        Router.to("App://main/toMain").addParam(params).done(new Router.InvokeResultListene() {
+        Router.to("App://main/toMain").addParam(this,123).done(new Router.InvokeResultListener() {
             @Override
             public void onError(Exception e) {
+                Toast.makeText(EXT_MainActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(Object o) {
 
             }
         });
