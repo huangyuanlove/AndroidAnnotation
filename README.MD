@@ -166,17 +166,33 @@ protected void onDestroy() {
 public class AccountModuleRouterProvider {
     
     @RouterPath(value = "login")
-    public void toLoginActivity(Context context, Bundle bundle){
+    public void toLoginActivity(Context context, String userName){
         Intent intent = new Intent(context,LoginActivity.class);
-        intent.putExtras(bundle);
+        intent.put("userName",userName);
         context.startActivity(intent);
     }
     
 }
 
+//在其他类中使用
+Router.to("Jandan://account/login").addParam(this,"userName").done(new Router.InvokeResultListener() {
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(EXT_MainActivity.this,e.toString(),Toast.LENGTH_SHORT).show();
 
+            }
+
+            @Override
+            public void onSuccess(Object o) {
+
+            }
+        });
 
 ```
+Router的本质上是进行的方法调用，可以反依赖调用。就像工程中的`app`模块依赖`example_lib`模块，我们仍然可以在`example_lib`调用`app`中的方法。
+当然正向调用也是可以的。
+
+具体示例可以看`example_lib`中的`EXT_MainActivity`类调用`app`中`MainProvider`类方法
 
 ----
 
@@ -187,7 +203,7 @@ TODO
 - [x] LongClickResponder 代替 setOnLongClickListener
 - [x] IntentValue 代替 getIntent().getXXX
 - [x] 广播
-- [ ] 路由
+- [x] 路由
 - [ ] 动态权限
 
 
