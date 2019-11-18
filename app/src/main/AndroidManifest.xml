@@ -13,7 +13,8 @@
         android:resizeableActivity="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".view.TestViewInjectActivityTwo"/>
+        <activity android:name=".view.TestPermissionActivity"></activity>
+        <activity android:name=".view.TestViewInjectActivityTwo" />
         <activity android:name=".view.TestViewInjectActivity" />
         <activity
             android:name=".view.MainActivity"

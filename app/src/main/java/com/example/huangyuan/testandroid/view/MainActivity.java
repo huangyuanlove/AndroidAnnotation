@@ -38,12 +38,10 @@ public class MainActivity extends Activity {
         findViewById(R.id.test_router).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               startActivity(new Intent(MainActivity.this, EXT_MainActivity.class));
+                startActivity(new Intent(MainActivity.this, EXT_MainActivity.class));
 
             }
         });
-
-
 
 
     }
@@ -70,10 +68,14 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this, TestViewInjectActivity.class));
     }
 
+    @OnClick(id = R.id.test_permission)
+    void testPermission(View v) {
+        startActivity(new Intent(this,TestPermissionActivity.class));
+    }
 
-//    @OnClick(id=R.id.test_router)
-    void test_router(View v){
 
+    //    @OnClick(id=R.id.test_router)
+    void test_router(View v) {
 
 
     }
