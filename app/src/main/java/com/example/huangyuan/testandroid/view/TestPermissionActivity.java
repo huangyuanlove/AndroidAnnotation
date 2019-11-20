@@ -17,6 +17,18 @@ import android.widget.Toast;
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_api.PermissionUtil;
 
+/**
+ * 将要进行的动作，需要某项危险权限时，我们需要先校验权限 PermissionUtil.hasSelfPermissions
+ * 如果有权限，则进行动作。
+ * 如果没有权限，校验是否需要提示 PermissionUtil.shouldShowRequestPermissionRationale；如果需要提示，则弹出提示框，用户点了允许之后再申请权限。如果不需要提示，则直接申请权限；
+ * 申请权限的结果有三种：
+ * 1. 授权onGrant
+ * 2. 禁止onDenied
+ * 3. 禁止并不在提示 onNeverAskAgain
+ *
+ *
+ */
+
 public class TestPermissionActivity extends AppCompatActivity {
 
     @Override
