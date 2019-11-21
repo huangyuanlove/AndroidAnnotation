@@ -3,7 +3,7 @@ package com.example.huangyuan.testandroid.view;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,9 +17,7 @@ import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.BroadcastResponder;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
-import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_annotation.LongClickResponder;
-import com.huangyuanlove.view_inject_api.BroadcastInject;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.ArrayList;
@@ -42,7 +40,7 @@ public class TestViewInjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_view_inject);
         ViewInjector.bind(this);
-        broadcastReceiverHashMap = BroadcastInject.registerReceiver(this);
+        broadcastReceiverHashMap = ViewInjector.registerReceiver(this);
 
 
         List<String> data = new ArrayList<>();
@@ -85,6 +83,12 @@ public class TestViewInjectActivity extends AppCompatActivity {
     @ClickResponder(id = {R.id.test_view_inject_one})
     public void onClickButtonOne(View v) {
         Toast.makeText(TestViewInjectActivity.this, "test_view_inject_one", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent();
+        intent.setData(Uri.parse("app://launch/user_detail?id=123&name=abc&double=1.23&float=3.14&long=1234567890&boolean=true"));
+        startActivity(intent);
+
+
     }
 
     @ClickResponder(idStr = {"test_view_inject_two"})

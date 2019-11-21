@@ -1,11 +1,12 @@
 package com.example.huangyuan.testandroid.view;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -13,7 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
-import com.huangyuanlove.view_inject_api.BundleInjector;
+import com.huangyuanlove.view_inject_annotation.UriValue;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.ArrayList;
@@ -152,12 +153,17 @@ public class TestViewInjectActivityTwo extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_view_inject);
         ViewInjector.bind(this);
-        BundleInjector.parseBundle(this);
+        ViewInjector.parseBundle(this);
+
+
+
+
 
         showBoolean.setText(aBoolean+"");
         showBooleans.setText(booleans+"");
@@ -207,7 +213,6 @@ public class TestViewInjectActivityTwo extends AppCompatActivity {
                   sendBroadcast(new Intent("com.huangyuanlove"));
             }
         });
-
 
 
     }

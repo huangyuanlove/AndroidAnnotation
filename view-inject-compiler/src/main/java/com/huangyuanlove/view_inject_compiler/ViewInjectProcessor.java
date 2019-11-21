@@ -7,6 +7,7 @@ import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_annotation.LongClickResponder;
 import com.huangyuanlove.view_inject_annotation.RouterModule;
+import com.huangyuanlove.view_inject_annotation.UriValue;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -45,6 +46,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
     private Map<TypeElement, List<Element>> longClickResponderMap = new HashMap<>();
     private Map<TypeElement, List<Element>> intentValueMap = new HashMap<>();
     private Map<TypeElement, List<Element>> broadCastResponderMap = new HashMap<>();
+    private Map<TypeElement, List<Element>> uriValueMap = new HashMap<>();
 
 
     private Map<TypeElement, TypeSpecWrapper> typeSpecWrapperMap = new HashMap<>();
@@ -57,6 +59,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
         set.add(LongClickResponder.class.getCanonicalName());
         set.add(IntentValue.class.getCanonicalName());
         set.add(BroadcastResponder.class.getCanonicalName());
+        set.add(UriValue.class.getCanonicalName());
         return set;
     }
 
@@ -79,12 +82,14 @@ public class ViewInjectProcessor extends AbstractProcessor {
         typeSpecWrapperMap.clear();
         intentValueMap.clear();
         broadCastResponderMap.clear();
+        uriValueMap.clear();
 
         Set<? extends Element> bindViewSet = roundEnvironment.getElementsAnnotatedWith(BindView.class);
         Set<? extends Element> onClickSet = roundEnvironment.getElementsAnnotatedWith(ClickResponder.class);
         Set<? extends Element> onLongClickSet = roundEnvironment.getElementsAnnotatedWith(LongClickResponder.class);
         Set<? extends Element> intentValueSet = roundEnvironment.getElementsAnnotatedWith(IntentValue.class);
         Set<? extends Element> broadCastResponderSet = roundEnvironment.getElementsAnnotatedWith(BroadcastResponder.class);
+        Set<? extends Element> uriValueSet = roundEnvironment.getElementsAnnotatedWith(UriValue.class);
 
 
         collectBindViewInfo(bindViewSet);
@@ -92,6 +97,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
         collectLongClickResponderInfo(onLongClickSet);
         collectIntentValueInfo(intentValueSet);
         collectBroadCastResponderMapInfo(broadCastResponderSet);
+        collectUriValueMapInfo(uriValueSet);
 
         generateCode();
 
@@ -103,7 +109,6 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
         return true;
     }
-
 
 
     private void collectBroadCastResponderMapInfo(Set<? extends Element> elements) {
@@ -126,6 +131,19 @@ public class ViewInjectProcessor extends AbstractProcessor {
             if (elementList == null) {
                 elementList = new ArrayList<>();
                 intentValueMap.put(typeElement, elementList);
+            }
+            elementList.add(element);
+        }
+    }
+
+
+    private void collectUriValueMapInfo(Set<? extends Element> elements) {
+        for (Element element : elements) {
+            TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+            List<Element> elementList = uriValueMap.get(typeElement);
+            if (elementList == null) {
+                elementList = new ArrayList<>();
+                uriValueMap.put(typeElement, elementList);
             }
             elementList.add(element);
         }
@@ -175,10 +193,10 @@ public class ViewInjectProcessor extends AbstractProcessor {
         generateClickResponderCode();
         generateOnLongClickResponderCode();
         generateIntentValueCode();
+        generateUriValueCode();
         generateBroadcastResponderCode();
 
     }
-
 
 
     private void generateBindViewCode() {
@@ -228,6 +246,18 @@ public class ViewInjectProcessor extends AbstractProcessor {
             List<Element> elements = intentValueMap.get(typeElement);
             for (Element element : elements) {
                 processorIntentValue(element, methodBuilder);
+            }
+        }
+
+    }
+
+    private void generateUriValueCode() {
+        for (TypeElement typeElement : uriValueMap.keySet()) {
+            MethodSpec.Builder methodBuilder = generateParseUriMethodCode(typeElement);
+
+            List<Element> elements = uriValueMap.get(typeElement);
+            for (Element element : elements) {
+                processorUriValue(element, methodBuilder);
             }
         }
 
@@ -428,6 +458,37 @@ public class ViewInjectProcessor extends AbstractProcessor {
     }
 
 
+    private MethodSpec.Builder generateParseUriMethodCode(TypeElement typeElement) {
+        TypeSpecWrapper typeSpecWrapper = generateTypeSpecWrapper(typeElement);
+        MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("parseUri");
+        if (methodBuilder == null) {
+
+            ClassName className = ClassName.bestGuess("android.net.Uri");
+
+
+            ParameterSpec parameterSpec = ParameterSpec.builder(className, "uri")
+
+                    .build();
+
+
+            methodBuilder = MethodSpec.methodBuilder("parseUri")
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .addParameter(ClassName.get(typeElement.asType()), "target")
+                    .addParameter(parameterSpec)
+                    .beginControlFlow("if(uri == null)")
+                    .addStatement("return ")
+                    .endControlFlow()
+                    .addStatement("String temp")
+                    .returns(void.class);
+
+        }
+        typeSpecWrapper.putMethodBuilder(methodBuilder);
+
+
+        return methodBuilder;
+    }
+
+
     private String getClassName(TypeElement type, String pkgName) {
         int packageLength = pkgName.length() + 1;
         return type.getQualifiedName().toString().substring(packageLength).replace('.', '$');
@@ -572,6 +633,42 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
 
     }
+
+
+    private void processorUriValue(Element element, MethodSpec.Builder methodBuilder) {
+        VariableElement variableElement = (VariableElement) element;
+        String varName = variableElement.getSimpleName().toString();
+
+        UriValue uriValue = variableElement.getAnnotation(UriValue.class);
+
+        methodBuilder.addStatement("temp = uri.getQueryParameter($S)", uriValue.key());
+        if (element.asType().toString().equals("java.lang.String")) {
+            methodBuilder.addStatement("target.$L=temp",varName);
+        }else {
+            switch (element.asType().getKind()){
+                case BOOLEAN:
+                    methodBuilder.addStatement("target.$L=Boolean.valueOf(temp)",varName);
+                    break;
+                case INT:
+                    methodBuilder.addStatement("target.$L= Integer.valueOf(temp)",varName);
+                    break;
+                case DOUBLE:
+                    methodBuilder.addStatement("target.$L= Double.valueOf(temp)",varName);
+                    break;
+                case FLOAT:
+                    methodBuilder.addStatement("target.$L= Float.valueOf(temp)",varName);
+                    break;
+
+                case LONG:
+                    methodBuilder.addStatement("target.$L= Long.valueOf(temp)",varName);
+                    break;
+
+            }
+        }
+
+
+    }
+
 
     private void processorIntentValue(Element element, MethodSpec.Builder methodBuilder) {
         VariableElement variableElement = (VariableElement) element;

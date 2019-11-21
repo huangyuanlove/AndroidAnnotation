@@ -13,8 +13,23 @@
         android:resizeableActivity="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".view.TestPermissionActivity"></activity>
-        <activity android:name=".view.TestViewInjectActivityTwo" />
+        <activity android:name=".view.TestUriValueActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="launch"
+                    android:pathPattern="/user_detail"
+                    android:scheme="app" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".view.TestPermissionActivity" />
+        <activity android:name=".view.TestViewInjectActivityTwo">
+
+        </activity>
         <activity android:name=".view.TestViewInjectActivity" />
         <activity
             android:name=".view.MainActivity"
