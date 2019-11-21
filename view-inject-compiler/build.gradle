@@ -19,7 +19,7 @@ publish {
     repoName = 'AndroidAnnotation'
     groupId = 'com.huangyuanlove'
     artifactId = 'view-inject-compile'
-    publishVersion = '0.0.5'
-    desc = 'Make flow layouts simpler'
+    publishVersion = '0.0.6'
+    desc = 'rapid development, reducing template code.'
     website = 'https://github.com/huangyuanlove/AndroidAnnotation'
 }
