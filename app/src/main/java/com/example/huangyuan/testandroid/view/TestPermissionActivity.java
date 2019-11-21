@@ -87,20 +87,20 @@ public class TestPermissionActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        PermissionUtil.onRequestPermissionsResult(this,permissions,grantResults,new PermissionUtil.RequestPermissionResult(){
+        PermissionUtil.onRequestPermissionsResult(this,requestCode,permissions,grantResults,new PermissionUtil.RequestPermissionResult(){
 
             @Override
-            public void onGrant() {
+            public void onGrant(int requestCode) {
                 takePhoto();
             }
 
             @Override
-            public void onDenied() {
+            public void onDenied(int requestCode) {
                 onPermissionDenied();
             }
 
             @Override
-            public void onNeverAskAgain() {
+            public void onNeverAskAgain(int requestCode) {
 
                 AlertDialog alertDialog = new AlertDialog.Builder(TestPermissionActivity.this)
                         .setTitle("权限提示")

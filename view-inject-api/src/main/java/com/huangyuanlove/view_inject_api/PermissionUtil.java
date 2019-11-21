@@ -35,9 +35,9 @@ public class PermissionUtil {
 
 
     public interface RequestPermissionResult{
-        void onGrant();
-        void onDenied();
-        void onNeverAskAgain();
+        void onGrant(int requestCode);
+        void onDenied(int requestCode);
+        void onNeverAskAgain(int requestCode);
     }
 
 
@@ -63,14 +63,14 @@ public class PermissionUtil {
     }
 
 
-    public  static void onRequestPermissionsResult(Activity activity, String permissions[], int[] grantResults ,RequestPermissionResult requestPermissionResult){
+    public  static void onRequestPermissionsResult(Activity activity,int reuqestCode, String permissions[], int[] grantResults ,RequestPermissionResult requestPermissionResult){
         if(verifyPermissions(grantResults)){
-            requestPermissionResult.onGrant();
+            requestPermissionResult.onGrant(reuqestCode);
         }else {
             if (!shouldShowRequestPermissionRationale(activity, permissions)) {
-                requestPermissionResult.onNeverAskAgain();
+                requestPermissionResult.onNeverAskAgain(reuqestCode);
             } else {
-                requestPermissionResult.onDenied();
+                requestPermissionResult.onDenied(reuqestCode);
             }
         }
     }
