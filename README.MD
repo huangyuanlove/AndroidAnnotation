@@ -101,7 +101,31 @@ UnParcelableObject serializableObject;
 
 如果传递的是序列化对象(实现了Serializable接口),type声明为`IntentValue.SERIALIZABLE_OBJECT`
 
-在字段使用前(一般是在Activity的onCreate或者Fragment的onCreateView方法中)调用`BundleInjector.parseBundle(this);`
+在字段使用前(一般是在Activity的onCreate或者Fragment的onCreateView方法中)调用`ViewInjector.parseBundle(this);`
+
+
+### @UriValue
+
+只支持如下几种类型，并且只能在Activity中使用
+
+``` java
+@UriValue(key = "name")
+String name;
+@UriValue(key = "id")
+int id;
+@UriValue(key = "double")
+double aDouble;
+
+@UriValue(key = "float")
+float aFloat;
+
+@UriValue(key = "long")
+long aLong;
+
+@UriValue(key = "boolean")
+boolean aBoolean;
+```
+在字段使用前(一般是在Activity的onCreate方法中)调用`ViewInjector.parseBundle(this);`
 
 
 ### @BroadcastResponder
@@ -109,7 +133,7 @@ UnParcelableObject serializableObject;
 使用方式
 ``` java
 //在 OnCreate 中注册广播接收器
-HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap = BroadcastInject.registerReceiver(this);
+HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap = ViewInjector.registerReceiver(this);
 
 //使用注解定义接收广播的action 以及对应的回调方法
 
