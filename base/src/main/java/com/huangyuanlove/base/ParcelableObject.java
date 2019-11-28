@@ -1,4 +1,4 @@
-package com.example.huangyuan.testandroid.view;
+package com.huangyuanlove.base;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,8 +6,8 @@ import android.os.Parcelable;
 
 public class ParcelableObject implements Parcelable {
 
-    String name;
-    int id;
+    public String name;
+    public int id;
 
 
     @Override

@@ -1,6 +1,5 @@
 package com.huangyuanlove.temp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -11,8 +10,6 @@ import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_api.Router;
 import com.huangyuanlove.view_inject_api.ViewInjector;
-
-import java.util.HashMap;
 
 public class EXT_MainActivity extends AppCompatActivity {
 

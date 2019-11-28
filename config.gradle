@@ -7,6 +7,7 @@ ext {
 //            viewInjectCompile  : 'com.huangyuanlove:view-inject-compile:0.0.3',
             viewInjectCompile  : project(':view-inject-compiler'),
             example_lib  : project(':example_lib'),
+            base  : project(':base'),
 
     ]
 }

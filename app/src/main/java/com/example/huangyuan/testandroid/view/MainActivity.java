@@ -1,11 +1,8 @@
 package com.example.huangyuan.testandroid.view;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +14,6 @@ import com.example.huangyuan.testandroid.annotation.OnClick;
 import com.example.huangyuan.testandroid.annotation.OnLongClick;
 import com.huangyuanlove.temp.EXT_MainActivity;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 

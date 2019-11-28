@@ -13,12 +13,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Description:
- * Author: huangyuan
- * Create on: 2019-10-30
- * Email: huangyuan@chunyu.me
- */
 public class ViewInjector {
     static final Map<Class<?>, Method> BINDINGS = new LinkedHashMap<>();
 

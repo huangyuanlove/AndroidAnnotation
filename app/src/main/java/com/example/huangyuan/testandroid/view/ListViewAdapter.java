@@ -13,12 +13,7 @@ import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.List;
 
-/**
- * Description:
- * Author: huangyuan
- * Create on: 2019-10-30
- * Email: huangyuan@chunyu.me
- */
+
 public class ListViewAdapter extends BaseAdapter {
 
     private List<String> data;

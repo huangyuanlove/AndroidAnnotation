@@ -1,24 +1,16 @@
 package com.huangyuanlove.view_inject_compiler;
 
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.processing.Filer;
-import javax.lang.model.element.Modifier;
 
-/**
- * Description:
- * Author: huangyuan
- * Create on: 2019-10-31
- * Email: huangyuan@chunyu.me
- */
+
 public class TypeSpecWrapper {
 
     private TypeSpec.Builder typeSpecBuilder;

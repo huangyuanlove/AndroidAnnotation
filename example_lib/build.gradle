@@ -33,6 +33,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation depend['viewInjectAnnotation']
     implementation depend['viewInjectApi']
+    implementation depend['base']
     annotationProcessor depend['viewInjectCompile']
 
     implementation "org.permissionsdispatcher:permissionsdispatcher:4.5.0"

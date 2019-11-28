@@ -6,7 +6,6 @@ import com.huangyuanlove.view_inject_annotation.BroadcastResponder;
 import com.huangyuanlove.view_inject_annotation.ClickResponder;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
 import com.huangyuanlove.view_inject_annotation.LongClickResponder;
-import com.huangyuanlove.view_inject_annotation.RouterModule;
 import com.huangyuanlove.view_inject_annotation.UriValue;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;

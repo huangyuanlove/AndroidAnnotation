@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,41 +13,37 @@ import androidx.fragment.app.Fragment;
 
 import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_annotation.BindView;
-import com.huangyuanlove.view_inject_annotation.IntentValue;
+import com.huangyuanlove.view_inject_annotation.ClickResponder;
+import com.huangyuanlove.view_inject_annotation.LongClickResponder;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
-/**
- * Description:
- * Author: huangyuan
- * Create on: 2019-10-30
- * Email: huangyuan@chunyu.me
- */
 public class TestViewInjectFragment extends Fragment {
 
-    @BindView(id = R.id.test_view_inject_one)
+    @BindView(id = R.id.button_one)
     protected Button buttonOne;
-    @BindView(idStr = "test_view_inject_two")
+    @BindView(idStr = "button_two")
     protected Button buttonTwo;
 
-    @IntentValue(key = "a1")
-    protected String a1;
-    @IntentValue(key = "a2")
-    protected String a2;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_test_view_inject,container,false);
+        View view = inflater.inflate(R.layout.fragment_view_inject,container,false);
         ViewInjector.bind(this,view);
         ViewInjector.parseBundle(this);
 
+        buttonTwo.setText("set text by code");
 
         return view;
     }
 
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    @ClickResponder(id = R.id.button_one)
+    public void onClickButtonOne(View v){
+        Toast.makeText(getContext(),"click button one",Toast.LENGTH_SHORT).show();
+    }
+    @LongClickResponder(id = R.id.button_one)
+    public void onLongClickButtonOne(View v){
+        Toast.makeText(getContext(),"long click button one",Toast.LENGTH_SHORT).show();
     }
 }

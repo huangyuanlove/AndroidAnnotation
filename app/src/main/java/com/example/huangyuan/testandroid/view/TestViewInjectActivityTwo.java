@@ -1,9 +1,7 @@
 package com.example.huangyuan.testandroid.view;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.huangyuan.testandroid.R;
+import com.huangyuanlove.base.ParcelableObject;
+import com.huangyuanlove.base.UnParcelableObject;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.IntentValue;
-import com.huangyuanlove.view_inject_annotation.UriValue;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 
 import java.util.ArrayList;
