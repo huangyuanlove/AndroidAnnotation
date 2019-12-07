@@ -230,6 +230,12 @@ Router的本质上是进行的方法调用，可以反依赖调用。就像工�
  3. 禁止并不在提示 onNeverAskAgain
 
 
+#### 相关博客
+[http://blog.huangyuanlove.com/2019/11/23/自定义注解-打造自己的框架-上篇/](http://blog.huangyuanlove.com/2019/11/23/自定义注解-打造自己的框架-上篇/)
+[http://blog.huangyuanlove.com/2019/12/01/自定义注解，打造自己的框架-中篇/](http://blog.huangyuanlove.com/2019/12/01/自定义注解，打造自己的框架-中篇/)
+[http://blog.huangyuanlove.com/2019/12/04/自定义注解，打造自己的框架-下篇/](http://blog.huangyuanlove.com/2019/12/04/自定义注解，打造自己的框架-下篇/)
+
+
 ----
 
 TODO
