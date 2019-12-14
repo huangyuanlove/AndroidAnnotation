@@ -31,8 +31,6 @@ import javax.lang.model.util.Elements;
 
 @AutoService(Processor.class)
 public class RouterProcessor extends AbstractProcessor {
-
-
     private Elements elementUtils;
 
     private Map<Element, TypeSpecWrapper> typeSpecWrapperMap = new HashMap<>();
@@ -42,7 +40,6 @@ public class RouterProcessor extends AbstractProcessor {
         Set<String> set = new LinkedHashSet<>();
         set.add(RouterModule.class.getCanonicalName());
         set.add(RouterPath.class.getCanonicalName());
-
 
         return set;
     }
@@ -75,9 +72,7 @@ public class RouterProcessor extends AbstractProcessor {
                 ClassName stringClassName = ClassName.bestGuess("java.lang.String");
                 ParameterizedTypeName routerMapClassName = ParameterizedTypeName.get(hashMapClassName, stringClassName, methodClassName);
 
-
                 ClassName targetClassName = ClassName.get(packageName, element.getSimpleName().toString());
-
 
                 TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(routerModule.schema() + routerModule.host() + "$$Router")
                         .addField(routerMapClassName, "routerMap", Modifier.PRIVATE)
@@ -96,17 +91,11 @@ public class RouterProcessor extends AbstractProcessor {
 
                 List<? extends Element> lists = element.getEnclosedElements();
                 for (Element element1 : lists) {
-                    ExecutableElement temp = (ExecutableElement)element1;
+                    ExecutableElement temp = (ExecutableElement) element1;
 
                     RouterPath routerPath = temp.getAnnotation(RouterPath.class);
                     if (routerPath != null) {
-
-
-                        constructorBuilder.addStatement("this.routerMap.put($S,target.getClass().getMethod($S,$L))",routerPath.value(),element1.getSimpleName().toString(),paramsClassString(temp));
-                        System.out.println(routerPath.value());
-
-
-
+                        constructorBuilder.addStatement("this.routerMap.put($S,target.getClass().getMethod($S,$L))", routerPath.value(), element1.getSimpleName().toString(), paramsClassString(temp));
                     }
 
                 }
@@ -123,20 +112,16 @@ public class RouterProcessor extends AbstractProcessor {
                         .addException(Exception.class)
                         .addParameter(String.class, "path")
                         .addParameter(paramWrapperName, "paramWrapper")
-                        .addStatement("$T method = this.routerMap.get($L)",methodClassName,"path")
+                        .addStatement("$T method = this.routerMap.get($L)", methodClassName, "path")
                         .beginControlFlow("if(method == null)")
                         .addStatement(" throw new Exception(\"can not find method which map \" +path)")
                         .endControlFlow()
-                        .addStatement("return $T.invoke(method,target,paramWrapper)",routerDelegateName)
+                        .addStatement("return $T.invoke(method,target,paramWrapper)", routerDelegateName)
                         .returns(Object.class);
 
                 typeSpecWrapper.putMethodBuilder(invokeBuilder);
 
-
             }
-
-
-
 
         }
 
@@ -146,36 +131,30 @@ public class RouterProcessor extends AbstractProcessor {
             entry.getValue().writeTo(processingEnv.getFiler());
         }
 
-
         return true;
     }
 
-    private String paramsClassString(ExecutableElement temp ){
+    private String paramsClassString(ExecutableElement temp) {
 
-       if(temp == null){
-           return null;
-       }
+        if (temp == null) {
+            return null;
+        }
 
         List<? extends VariableElement> parameters = temp.getParameters();
 
-       if(parameters ==null || parameters.size() == 0){
-           return  null;
-       }
+        if (parameters == null || parameters.size() == 0) {
+            return null;
+        }
 
         String[] result = new String[parameters.size()];
 
-       StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < parameters.size(); i++) {
-            result[i] = parameters.get(i).asType().toString() +".class";
-            sb.append(parameters.get(i).asType().toString() +".class");
+            result[i] = parameters.get(i).asType().toString() + ".class";
+            sb.append(parameters.get(i).asType().toString() + ".class");
             sb.append(",");
         }
-
-        return sb.deleteCharAt(sb.length()-1).toString();
-
-
-
+        return sb.deleteCharAt(sb.length() - 1).toString();
     }
-
 }

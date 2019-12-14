@@ -225,18 +225,19 @@ Router的本质上是进行的方法调用，可以反依赖调用。就像工�
  如果有权限，则进行动作。
  如果没有权限，校验是否需要提示 PermissionUtil.shouldShowRequestPermissionRationale；如果需要提示，则弹出提示框，用户点了允许之后再申请权限。如果不需要提示，则直接申请权限；
  申请权限的结果有三种：
+
  1. 授权onGrant
  2. 禁止onDenied
  3. 禁止并不在提示 onNeverAskAgain
 
 
 #### 相关博客
-[http://blog.huangyuanlove.com/2019/11/23/自定义注解-打造自己的框架-上篇/](http://blog.huangyuanlove.com/2019/11/23/自定义注解-打造自己的框架-上篇/)
-
-[http://blog.huangyuanlove.com/2019/12/01/自定义注解，打造自己的框架-中篇/](http://blog.huangyuanlove.com/2019/12/01/自定义注解，打造自己的框架-中篇/)
-
-[http://blog.huangyuanlove.com/2019/12/04/自定义注解，打造自己的框架-下篇/](http://blog.huangyuanlove.com/2019/12/04/自定义注解，打造自己的框架-下篇/)
-
+*  [https://blog.huangyuanlove.com/2019/11/23/自定义注解-打造自己的框架-上篇/](https://blog.huangyuanlove.com/2019/11/23/自定义注解-打造自己的框架-上篇/)
+*  [https://blog.huangyuanlove.com/2019/12/01/自定义注解，打造自己的框架-中篇/](https://blog.huangyuanlove.com/2019/12/01/自定义注解，打造自己的框架-中篇/)
+* [https://blog.huangyuanlove.com/2019/12/04/自定义注解，打造自己的框架-下篇/](https://blog.huangyuanlove.com/2019/12/04/自定义注解，打造自己的框架-下篇/)
+* [https://blog.huangyuanlove.com/2019/12/09/自定义注解，打造自己的框架-下下篇/](https://blog.huangyuanlove.com/2019/12/09/自定义注解，打造自己的框架-下下篇/)
+* [https://blog.huangyuanlove.com/2019/12/10/自定义注解，打造自己的框架-下下下篇/](https://blog.huangyuanlove.com/2019/12/10/自定义注解，打造自己的框架-下下下篇/)
+* [https://blog.huangyuanlove.com/2019/12/12/自定义注解，打造自己的框架-最终篇/](https://blog.huangyuanlove.com/2019/12/12/自定义注解，打造自己的框架-最终篇/)
 
 ----
 
@@ -246,6 +247,7 @@ TODO
 - [x] @ClickResponder 代替 setOnClickListener
 - [x] @LongClickResponder 代替 setOnLongClickListener
 - [x] @IntentValue 代替 getIntent().getXXX
+- [x] @UriValue 代替 getQueryParameter
 - [x] @BroadcastResponder 代替 registerReceiver
 - [x] @RouterModule、@RouterPath 来进行反依赖传递调用
 - [x] PermissionUtil 申请权限
