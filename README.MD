@@ -4,9 +4,9 @@
 
 
 ``` gradle
-    implementation 'com.huangyuanlove:view-inject-api:0.0.6'
-    implementation 'com.huangyuanlove:view-inject-annotation:0.0.6'
-    annotationProcessor 'com.huangyuanlove:view-inject-compile:0.0.6'
+implementation 'com.huangyuanlove:view-inject-api:0.1.0'
+implementation 'com.huangyuanlove:view-inject-annotation:0.1.0'
+annotationProcessor 'com.huangyuanlove:view-inject-compile:0.1.0'
 ```
 
 ### @BindView
