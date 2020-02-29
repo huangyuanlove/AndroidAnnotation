@@ -9,7 +9,23 @@ implementation 'com.huangyuanlove:view-inject-annotation:0.1.0'
 annotationProcessor 'com.huangyuanlove:view-inject-compile:0.1.0'
 ```
 
+###　混淆
+如果开启了混淆，则需要在混淆文件中配置
+```
+-keep public class com.huangyuanlove.view_inject_annotation.**
+-keep public class com.huangyuanlove.view_inject_api.**
+-keep public class com.huangyuanlove.view_inject_compiler.**
+-keep public class **$ViewInjector {
+  **[] $VALUES;
+  public *;
+}
+```
+
+
+
+
 ### @BindView
+
 使用方法：
 在application module中
 ``` java
