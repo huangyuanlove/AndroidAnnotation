@@ -15,6 +15,7 @@ annotationProcessor 'com.huangyuanlove:view-inject-compile:0.1.0'
 -keep public class com.huangyuanlove.view_inject_annotation.**
 -keep public class com.huangyuanlove.view_inject_api.**
 -keep public class com.huangyuanlove.view_inject_compiler.**
+-keep public class **$$Router
 -keep public class **$ViewInjector {
   **[] $VALUES;
   public *;
