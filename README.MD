@@ -1,12 +1,17 @@
 ## 编译时注解框架
 
+
+### change log
+> 新增 广播接收器支持permission
+> 新增 广播接收器支持flag
+> 新增 广播接收器支持priority
+
 ### 引用
 
-
 ``` gradle
-implementation 'com.huangyuanlove:view-inject-api:0.1.0'
-implementation 'com.huangyuanlove:view-inject-annotation:0.1.0'
-annotationProcessor 'com.huangyuanlove:view-inject-compile:0.1.0'
+implementation 'com.huangyuanlove:view-inject-api:1.1.0'
+implementation 'com.huangyuanlove:view-inject-annotation:1.1.0'
+annotationProcessor 'com.huangyuanlove:view-inject-compile:1.1.0'
 ```
 
 ### 混淆
@@ -147,6 +152,84 @@ boolean aBoolean;
 ### @BroadcastResponder
 广播分为本地广播和全局广播，注解接收广播接收器之后，需要自己去解注册
 使用方式
+
+``` java
+public static final String NORMAL_LOCAL = "normal_local";
+public static final String NORMAL_GLOBAL = "normal_global";
+public static final String PERMISSION_GLOBAL = "permission_global";
+public static final String BROADCAST_PERMISSION = "com.huangyuanlove.permission_broadcast";
+
+
+//在 OnCreate 中注册广播接收器 
+HashMap<Integer, ArrayList<BroadcastReceiver>> integerArrayListHashMap = ViewInjector.registerReceiver(this);
+
+//使用注解定义接收广播的action 以及对应的回调方法
+@BroadcastResponder(action = NORMAL_LOCAL)
+void onReceiveNormalLocalBroadcast(Context context, Intent intent) {
+  showAction.setText("onReceiveNormalLocalBroadcast:"+intent.getAction());
+}
+
+@BroadcastResponder(action = NORMAL_GLOBAL,type = BroadcastResponder.GLOBAL_BROADCAST)
+void onReceiveNormalGlobalBroadcast(Context context, Intent intent) {
+  showAction.setText("onReceiveNormalGlobalBroadcast:"+intent.getAction());
+}
+
+@BroadcastResponder(action = PERMISSION_GLOBAL,permission = BROADCAST_PERMISSION,type = BroadcastResponder.GLOBAL_BROADCAST)
+void onReceivePermissionGlobalBroadcast(Context context, Intent intent) {
+  showAction.setText("onReceivePermissionGlobalBroadcast"+intent.getAction());
+}
+
+//在 onDestroy 中解注册
+  @Override
+  protected void onDestroy() {
+  super.onDestroy();
+  if(integerArrayListHashMap!=null){
+    ArrayList<BroadcastReceiver> localReceiverList = integerArrayListHashMap.get(BroadcastResponder.LOCAL_BROADCAST);
+    if(localReceiverList!=null && localReceiverList.size()>0){
+      for(BroadcastReceiver receiver : localReceiverList){
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+      }
+    }
+    ArrayList<BroadcastReceiver> globalReceiverList = integerArrayListHashMap.get(BroadcastResponder.GLOBAL_BROADCAST);
+    if(globalReceiverList!=null && globalReceiverList.size()>0){
+      for(BroadcastReceiver receiver : globalReceiverList){
+        unregisterReceiver(receiver);
+      }
+    }
+
+  }
+}
+
+//发送广播
+@ClickResponder(id= R.id.send_normal_local_broadcast)
+public void sendNormalLocalBroadcast(View v){
+  Intent intent = new Intent();
+  intent.setAction(TestBroadcastActivity.NORMAL_LOCAL);
+  LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+}
+
+@ClickResponder(id= R.id.send_normal_global_broadcast)
+public void sendNormalGlobalBroadcast(View v){
+  Intent intent = new Intent();
+  intent.setAction(TestBroadcastActivity.NORMAL_GLOBAL);
+  sendBroadcast(intent);
+}
+@ClickResponder(id= R.id.send_permisson_global_broadcast)
+public void sendPermissonGlobalBroadcast(View v){
+  Intent intent = new Intent();
+  intent.setAction(TestBroadcastActivity.PERMISSION_GLOBAL);
+  sendBroadcast(intent,TestBroadcastActivity.BROADCAST_PERMISSION);
+}
+```
+
+
+
+
+
+
+
+**以下是0.1.0版本的说明**
+
 ``` java
 //在 OnCreate 中注册广播接收器
 HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap = ViewInjector.registerReceiver(this);

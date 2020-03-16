@@ -36,7 +36,7 @@ publish {
     repoName = 'AndroidAnnotation'
     groupId = 'com.huangyuanlove'
     artifactId = 'view-inject-api'
-    publishVersion = '0.1.0'
+    publishVersion = '1.1.0'
     desc = 'rapid development, reducing template code.'
     website = 'https://github.com/huangyuanlove/AndroidAnnotation'
 }
