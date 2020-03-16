@@ -269,25 +269,28 @@ public class ViewInjectProcessor extends AbstractProcessor {
         MethodSpec.Builder methodBuilder = typeSpecWrapper.getMethodBuilder("registerReceiver");
         ClassName intentFilterClassName = ClassName.bestGuess("android.content.IntentFilter");
         ClassName broadcastReceiverClassName = ClassName.bestGuess("android.content.BroadcastReceiver");
-
+        ClassName arrayListClassName = ClassName.get("java.util", "ArrayList");
 
         if (methodBuilder == null) {
-
+            TypeName listOfBroadcastReceive = ParameterizedTypeName.get(arrayListClassName, broadcastReceiverClassName);
 
             TypeName methodReturns = ParameterizedTypeName.get(
                     ClassName.get(HashMap.class),
                     ClassName.get(Integer.class),
-                    broadcastReceiverClassName
+                    listOfBroadcastReceive
             );
 
 
             methodBuilder = MethodSpec.methodBuilder("registerReceiver")
                     .addParameter(ClassName.get(typeElement.asType()), "target")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                    .addStatement("HashMap<Integer,BroadcastReceiver> hashMap = new HashMap<>()")
-
-                    .addStatement("$T localBroadcastFilter = new $T()", intentFilterClassName, intentFilterClassName)
-                    .addStatement("$T globalBroadcastFilter = new $T()", intentFilterClassName, intentFilterClassName)
+                    .addStatement("HashMap<Integer,ArrayList<BroadcastReceiver>> hashMap = new HashMap<>()")
+                    .addStatement("BroadcastReceiver localBroadcastReceiver = null")
+                    .addStatement("BroadcastReceiver globalBroadcastReceiver = null")
+                    .addStatement("ArrayList<BroadcastReceiver> localBroadcastReceiveList = new ArrayList<>()")
+                    .addStatement("ArrayList<BroadcastReceiver> globalBroadcastReceiveList = new ArrayList<>()")
+                    .addStatement("$T localBroadcastFilter ", intentFilterClassName)
+                    .addStatement("$T globalBroadcastFilter", intentFilterClassName)
                     .returns(methodReturns);
             typeSpecWrapper.putMethodBuilder(methodBuilder);
         }
@@ -305,94 +308,119 @@ public class ViewInjectProcessor extends AbstractProcessor {
             ClassName contextClassName = ClassName.bestGuess("android.content.Context");
             ClassName intentClassName = ClassName.bestGuess("android.content.Intent");
             ClassName localBroadcastManagerClassName = ClassName.bestGuess("androidx.localbroadcastmanager.content.LocalBroadcastManager");
-
+            ClassName intentFilterClassName = ClassName.bestGuess("android.content.IntentFilter");
 
             List<Element> elements = broadCastResponderMap.get(typeElement);
 
-            HashMap<String, String> localBroadCast = new HashMap<>();
-            HashMap<String, String> globalBroadCast = new HashMap<>();
+            HashMap<String, String> localBroadCastActionMap;
+            HashMap<String, String> globalBroadCastActionMap;
 
             for (Element element : elements) {
                 ExecutableElement executableElement = (ExecutableElement) element;
                 BroadcastResponder broadcastResponder = executableElement.getAnnotation(BroadcastResponder.class);
                 int type = broadcastResponder.type();
                 String[] actions = broadcastResponder.action();
-                for (String action : actions) {
-
-                    if (BroadcastResponder.LOCAL_BROADCAST == type) {
-                        methodBuilder.addStatement("localBroadcastFilter.addAction(($S))", action);
-                        localBroadCast.put(action, element.getSimpleName().toString());
+                int flag = broadcastResponder.flag();
+                int priority = broadcastResponder.priority();
+                String permission = broadcastResponder.permission();
 
 
-                    } else if (BroadcastResponder.GLOBAL_BROADCAST == type) {
-                        globalBroadCast.put(action, element.getSimpleName().toString());
-                        methodBuilder.addStatement("globalBroadcastFilter.addAction(($S))", action);
+                if (BroadcastResponder.LOCAL_BROADCAST == type) {
+                    localBroadCastActionMap = new HashMap<>();
+                    methodBuilder.addStatement("localBroadcastFilter = new $T()", intentFilterClassName);
+                    for (String action : actions) {
+                        methodBuilder.addStatement("localBroadcastFilter.addAction($S)", action);
+                        localBroadCastActionMap.put(action, element.getSimpleName().toString());
+                    }
+                    if (priority != BroadcastResponder.DEFAULT_PRIORITY) {
+                        methodBuilder.addStatement("localBroadcastFilter.setPriority($L)", priority);
                     }
 
+                    if (localBroadCastActionMap.size() > 0) {
+                        CodeBlock.Builder caseBlockBuilder = CodeBlock.builder().beginControlFlow("switch (intent.getAction())");
+                        for (Map.Entry<String, String> entry : localBroadCastActionMap.entrySet()) {
+                            caseBlockBuilder.add("case $S:\n", entry.getKey())
+                                    .addStatement("target.$L(context,intent)", entry.getValue())
+                                    .addStatement("break");
+                        }
+
+
+                        caseBlockBuilder.endControlFlow();
+
+
+                        MethodSpec broadcastReceiverMethod = MethodSpec.methodBuilder("onReceive")
+                                .addModifiers(Modifier.PUBLIC)
+                                .addParameter(contextClassName, "context")
+                                .addParameter(intentClassName, "intent")
+                                .addCode(caseBlockBuilder.build())
+                                .returns(void.class)
+                                .build();
+                        TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
+                                .addSuperinterface(broadcastReceiverClassName)
+                                .addMethod(broadcastReceiverMethod)
+                                .build();
+                        methodBuilder.addStatement("localBroadcastReceiver = $L", innerTypeSpec);
+                        methodBuilder.addStatement("$T.getInstance(target).registerReceiver(localBroadcastReceiver,localBroadcastFilter)", localBroadcastManagerClassName);
+
+
+                        methodBuilder.addStatement("localBroadcastReceiveList.add(localBroadcastReceiver)");
+
+                    }
+
+                } else if (BroadcastResponder.GLOBAL_BROADCAST == type) {
+                    methodBuilder.addStatement(" globalBroadcastFilter = new $T()", intentFilterClassName);
+                    globalBroadCastActionMap = new HashMap<>();
+                    for (String action : actions) {
+                        methodBuilder.addStatement("globalBroadcastFilter.addAction($S)", action);
+                        globalBroadCastActionMap.put(action, element.getSimpleName().toString());
+                    }
+                    if (priority != BroadcastResponder.DEFAULT_PRIORITY) {
+                        methodBuilder.addStatement("globalBroadcastFilter.setPriority($L)", priority);
+                    }
+
+                    if (globalBroadCastActionMap.size() > 0) {
+                        CodeBlock.Builder caseBlockBuilder = CodeBlock.builder().beginControlFlow("switch (intent.getAction())");
+                        for (Map.Entry<String, String> entry : globalBroadCastActionMap.entrySet()) {
+                            caseBlockBuilder.add("case $S:\n", entry.getKey())
+                                    .addStatement("target.$L(context,intent)", entry.getValue())
+                                    .addStatement("break");
+                        }
+
+
+                        caseBlockBuilder.endControlFlow();
+                        MethodSpec broadcastReceiverMethod = MethodSpec.methodBuilder("onReceive")
+                                .addModifiers(Modifier.PUBLIC)
+                                .addParameter(contextClassName, "context")
+                                .addParameter(intentClassName, "intent")
+                                .addCode(caseBlockBuilder.build())
+                                .returns(void.class)
+                                .build();
+                        TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
+                                .addSuperinterface(broadcastReceiverClassName)
+                                .addMethod(broadcastReceiverMethod)
+                                .build();
+                        methodBuilder.addStatement("globalBroadcastReceiver = $L", innerTypeSpec);
+
+                        if (permission.equals(BroadcastResponder.DEFAULT_PERMISSION)) {
+                            permission = null;
+                        }
+                        if (flag != BroadcastResponder.DEFAULT_FLAG) {
+                            methodBuilder.addStatement("target.registerReceiver(globalBroadcastReceiver,globalBroadcastFilter,$S,null,$L)", permission, flag);
+                        } else {
+                            methodBuilder.addStatement("target.registerReceiver(globalBroadcastReceiver,globalBroadcastFilter,$S,null)", permission);
+                        }
+
+
+                        methodBuilder.addStatement("globalBroadcastReceiveList.add(globalBroadcastReceiver)");
+
+
+
+                    }
                 }
-
-
             }
-
-
-            if (globalBroadCast.size() > 0) {
-                CodeBlock.Builder caseBlockBuilder = CodeBlock.builder().beginControlFlow("switch (intent.getAction())");
-                for (Map.Entry<String, String> entry : globalBroadCast.entrySet()) {
-                    caseBlockBuilder.add("case $S:\n", entry.getKey())
-                            .addStatement("target.$L(context,intent)", entry.getValue())
-                            .addStatement("break");
-                }
-
-
-                caseBlockBuilder.endControlFlow();
-                MethodSpec broadcastReceiverMethod = MethodSpec.methodBuilder("onReceive")
-                        .addModifiers(Modifier.PUBLIC)
-                        .addParameter(contextClassName, "context")
-                        .addParameter(intentClassName, "intent")
-                        .addCode(caseBlockBuilder.build())
-                        .returns(void.class)
-                        .build();
-                TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
-                        .addSuperinterface(broadcastReceiverClassName)
-                        .addMethod(broadcastReceiverMethod)
-                        .build();
-                methodBuilder.addStatement("$T globalBroadcastReceiver = $L", broadcastReceiverClassName, innerTypeSpec);
-                methodBuilder.addStatement("target.registerReceiver(globalBroadcastReceiver,globalBroadcastFilter)");
-                methodBuilder.addStatement("hashMap.put($L,globalBroadcastReceiver)", BroadcastResponder.GLOBAL_BROADCAST);
-            }
-
-
-            if (localBroadCast.size() > 0) {
-                CodeBlock.Builder caseBlockBuilder = CodeBlock.builder().beginControlFlow("switch (intent.getAction())");
-                for (Map.Entry<String, String> entry : localBroadCast.entrySet()) {
-                    caseBlockBuilder.add("case $S:\n", entry.getKey())
-                            .addStatement("target.$L(context,intent)", entry.getValue())
-                            .addStatement("break");
-                }
-
-
-                caseBlockBuilder.endControlFlow();
-
-
-                MethodSpec broadcastReceiverMethod = MethodSpec.methodBuilder("onReceive")
-                        .addModifiers(Modifier.PUBLIC)
-                        .addParameter(contextClassName, "context")
-                        .addParameter(intentClassName, "intent")
-                        .addCode(caseBlockBuilder.build())
-                        .returns(void.class)
-                        .build();
-                TypeSpec innerTypeSpec = TypeSpec.anonymousClassBuilder("")
-                        .addSuperinterface(broadcastReceiverClassName)
-                        .addMethod(broadcastReceiverMethod)
-                        .build();
-                methodBuilder.addStatement("$T localBroadcastReceiver = $L", broadcastReceiverClassName, innerTypeSpec);
-                methodBuilder.addStatement("$T.getInstance(target).registerReceiver(localBroadcastReceiver,localBroadcastFilter)", localBroadcastManagerClassName);
-                methodBuilder.addStatement("hashMap.put($L,localBroadcastReceiver)", BroadcastResponder.LOCAL_BROADCAST);
-            }
-
+            methodBuilder.addStatement("hashMap.put($L,localBroadcastReceiveList)", BroadcastResponder.LOCAL_BROADCAST);
+            methodBuilder.addStatement("hashMap.put($L,globalBroadcastReceiveList)", BroadcastResponder.GLOBAL_BROADCAST);
             methodBuilder.addStatement("return hashMap");
-
-
         }
     }
 
@@ -642,24 +670,24 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
         methodBuilder.addStatement("temp = uri.getQueryParameter($S)", uriValue.key());
         if (element.asType().toString().equals("java.lang.String")) {
-            methodBuilder.addStatement("target.$L=temp",varName);
-        }else {
-            switch (element.asType().getKind()){
+            methodBuilder.addStatement("target.$L=temp", varName);
+        } else {
+            switch (element.asType().getKind()) {
                 case BOOLEAN:
-                    methodBuilder.addStatement("target.$L=Boolean.valueOf(temp)",varName);
+                    methodBuilder.addStatement("target.$L=Boolean.valueOf(temp)", varName);
                     break;
                 case INT:
-                    methodBuilder.addStatement("target.$L= Integer.valueOf(temp)",varName);
+                    methodBuilder.addStatement("target.$L= Integer.valueOf(temp)", varName);
                     break;
                 case DOUBLE:
-                    methodBuilder.addStatement("target.$L= Double.valueOf(temp)",varName);
+                    methodBuilder.addStatement("target.$L= Double.valueOf(temp)", varName);
                     break;
                 case FLOAT:
-                    methodBuilder.addStatement("target.$L= Float.valueOf(temp)",varName);
+                    methodBuilder.addStatement("target.$L= Float.valueOf(temp)", varName);
                     break;
 
                 case LONG:
-                    methodBuilder.addStatement("target.$L= Long.valueOf(temp)",varName);
+                    methodBuilder.addStatement("target.$L= Long.valueOf(temp)", varName);
                     break;
 
             }

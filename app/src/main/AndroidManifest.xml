@@ -5,7 +5,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="com.huangyuanlove.permission_broadcast"/>
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -13,7 +13,9 @@
         android:resizeableActivity="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".view.TestViewInjectInFragmentActivity"></activity>
+        <activity android:name=".view.BroadcastSenderActivity"></activity>
+        <activity android:name=".view.TestBroadcastActivity" />
+        <activity android:name=".view.TestViewInjectInFragmentActivity" />
         <activity android:name=".view.TestUriValueActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -28,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.TestPermissionActivity" />
-        <activity android:name=".view.TestViewInjectActivityTwo"></activity>
+        <activity android:name=".view.TestViewInjectActivityTwo" />
         <activity android:name=".view.TestViewInjectActivity" />
         <activity
             android:name=".view.MainActivity"

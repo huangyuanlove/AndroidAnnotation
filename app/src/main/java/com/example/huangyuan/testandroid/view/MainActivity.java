@@ -69,11 +69,9 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this,TestPermissionActivity.class));
     }
 
-
-    //    @OnClick(id=R.id.test_router)
-    void test_router(View v) {
-
-
+    @OnClick(id = R.id.test_broadcast)
+    void testBroadCast(View v){
+        startActivity(new Intent(this,TestBroadcastActivity.class));
     }
 
     private void initAnnotation() {

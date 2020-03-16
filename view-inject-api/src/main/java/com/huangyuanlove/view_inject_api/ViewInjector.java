@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -114,10 +115,10 @@ public class ViewInjector {
 
     static final Map<Class<?>, Method> BROADCAST_MAP = new LinkedHashMap<>();
 
-    public static HashMap<Integer, BroadcastReceiver> registerReceiver(Activity activity) {
+    public static HashMap<Integer, ArrayList<BroadcastReceiver>> registerReceiver(Activity activity) {
         try {
             Method method = findRegisterReceiverMethodForClass(activity.getClass());
-            return (HashMap<Integer,BroadcastReceiver>)method.invoke(null,activity);
+            return (HashMap<Integer, ArrayList<BroadcastReceiver>>)method.invoke(null,activity);
         }catch (Exception e){
             e.printStackTrace();
         }

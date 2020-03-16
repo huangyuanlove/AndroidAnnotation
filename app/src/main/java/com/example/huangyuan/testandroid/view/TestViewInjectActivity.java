@@ -14,8 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.huangyuan.testandroid.R;
-import com.huangyuanlove.base.ParcelableObject;
-import com.huangyuanlove.base.UnParcelableObject;
 import com.huangyuanlove.base.Util;
 import com.huangyuanlove.view_inject_annotation.BindView;
 import com.huangyuanlove.view_inject_annotation.BroadcastResponder;
@@ -36,7 +34,7 @@ public class TestViewInjectActivity extends AppCompatActivity {
     @BindView(id = R.id.list_view)
     protected ListView listView;
 
-    HashMap<Integer, BroadcastReceiver> broadcastReceiverHashMap;
+    HashMap<Integer,ArrayList<BroadcastReceiver> > broadcastReceiverHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +60,24 @@ public class TestViewInjectActivity extends AppCompatActivity {
 
     }
 
-    @BroadcastResponder(action = {"com.huangyuanblog","com.huangyuanblog.www"})
+    @BroadcastResponder(action = {"com.huangyuanblog","com.huangyuanblog.www"},priority = 999)
     public void onReceiveBroadcast(Context context, Intent intent){
         Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
     }
 
+    @BroadcastResponder(action = {"huangyuanblog","bloghuangyuan"})
+    public void onReceiveBlogBroadcast(Context context,Intent intent){
+        Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
+    }
 
-    @BroadcastResponder(action = {"com.huangyuanlove",Intent.ACTION_AIRPLANE_MODE_CHANGED},type = BroadcastResponder.GLOBAL_BROADCAST)
+
+    @BroadcastResponder(action = {"com.huangyuanlove",Intent.ACTION_AIRPLANE_MODE_CHANGED},type = BroadcastResponder.GLOBAL_BROADCAST,priority = 188,flag = 0,permission = "com.huangyuanlove.broadcast_permission")
     public void onReceiveBroadcastOther(Context context, Intent intent){
+        Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
+    }
+
+    @BroadcastResponder(action = "com.huangyuanlove.blog")
+    public void onReceiverNormalBlogBroadcast(Context context,Intent intent){
         Toast.makeText(context,intent.getAction(),Toast.LENGTH_SHORT).show();
     }
 
@@ -121,13 +129,17 @@ public class TestViewInjectActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(broadcastReceiverHashMap!=null){
-            if(broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST) !=null){
-
-                unregisterReceiver(broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST));
+            ArrayList<BroadcastReceiver> globalList = broadcastReceiverHashMap.get(BroadcastResponder.GLOBAL_BROADCAST);
+            if(globalList!=null && globalList.size()>0){
+                for(BroadcastReceiver receiver : globalList){
+                    unregisterReceiver(receiver);
+                }
             }
-
-            if(broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST) !=null){
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST));
+            ArrayList<BroadcastReceiver> localList = broadcastReceiverHashMap.get(BroadcastResponder.LOCAL_BROADCAST);
+            if(localList!=null && localList.size()>0){
+                for(BroadcastReceiver receiver : localList){
+                    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+                }
             }
 
         }
