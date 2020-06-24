@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.huangyuan.testandroid.R;
-import com.huangyuanlove.view_inject_api.PermissionUtil;
+import com.huangyuanlove.view_inject_api.permissin.PermissionUtil;
 
 /**
  * 将要进行的动作，需要某项危险权限时，我们需要先校验权限 PermissionUtil.hasSelfPermissions
@@ -78,15 +78,13 @@ public class TestPermissionActivity extends AppCompatActivity {
         Toast.makeText(this,"拒绝了权限，无法进行下一步操作",Toast.LENGTH_SHORT).show();
     }
     private void takePhoto(){
-
-
-
         startActivity(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
     }
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
         PermissionUtil.onRequestPermissionsResult(this,requestCode,permissions,grantResults,new PermissionUtil.RequestPermissionResult(){
 
             @Override
@@ -126,9 +124,6 @@ public class TestPermissionActivity extends AppCompatActivity {
 
 
                 alertDialog.show();
-
-
-                Toast.makeText(TestPermissionActivity.this,"拒绝了权限，并永不询问，请在设置中打开权限，否则无法进行下一步操作",Toast.LENGTH_SHORT).show();
             }
         });
     }

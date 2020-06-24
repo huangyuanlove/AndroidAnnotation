@@ -1,4 +1,4 @@
-package com.huangyuanlove.view_inject_api;
+package com.huangyuanlove.view_inject_api.permissin;
 
 import android.app.Activity;
 import android.content.Context;
@@ -63,14 +63,14 @@ public class PermissionUtil {
     }
 
 
-    public  static void onRequestPermissionsResult(Activity activity,int reuqestCode, String permissions[], int[] grantResults ,RequestPermissionResult requestPermissionResult){
+    public  static void onRequestPermissionsResult(Activity activity,int requestCode, String permissions[], int[] grantResults ,RequestPermissionResult requestPermissionResult){
         if(verifyPermissions(grantResults)){
-            requestPermissionResult.onGrant(reuqestCode);
+            requestPermissionResult.onGrant(requestCode);
         }else {
             if (!shouldShowRequestPermissionRationale(activity, permissions)) {
-                requestPermissionResult.onNeverAskAgain(reuqestCode);
+                requestPermissionResult.onNeverAskAgain(requestCode);
             } else {
-                requestPermissionResult.onDenied(reuqestCode);
+                requestPermissionResult.onDenied(requestCode);
             }
         }
     }

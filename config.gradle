@@ -1,11 +1,11 @@
 ext {
     depend = [
-//            viewInjectAnnotation: 'com.huangyuanlove:view-inject-annotation:0.1.0',
-            viewInjectAnnotation: project(':view-inject-annotation'),
-//            viewInjectApi      : 'com.huangyuanlove:view-inject-api:0.1.0',
-            viewInjectApi      : project(':view-inject-api'),
-//            viewInjectCompile  : 'com.huangyuanlove:view-inject-compile:0.1.0',
-            viewInjectCompile  : project(':view-inject-compiler'),
+            viewInjectAnnotation: 'com.huangyuanlove:view-inject-annotation:1.1.0',
+//            viewInjectAnnotation: project(':view-inject-annotation'),
+            viewInjectApi      : 'com.huangyuanlove:view-inject-api:1.1.1',
+//            viewInjectApi      : project(':view-inject-api'),
+            viewInjectCompile  : 'com.huangyuanlove:view-inject-compile:1.1.0',
+//            viewInjectCompile  : project(':view-inject-compiler'),
             example_lib  : project(':example_lib'),
             base  : project(':base'),
 

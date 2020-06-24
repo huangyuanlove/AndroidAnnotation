@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'bintray-release'
 apply plugin: 'com.novoda.bintray-release'
 android {
     compileSdkVersion 29
@@ -36,7 +35,7 @@ publish {
     repoName = 'AndroidAnnotation'
     groupId = 'com.huangyuanlove'
     artifactId = 'view-inject-api'
-    publishVersion = '1.1.0'
+    publishVersion = '1.1.1'
     desc = 'rapid development, reducing template code.'
     website = 'https://github.com/huangyuanlove/AndroidAnnotation'
 }
