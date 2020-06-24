@@ -48,15 +48,16 @@ public class TestPermissionFragment extends Fragment {
 
     @ClickResponder(id = R.id.audio_permission)
     public void onClickAudioPermission(View v){
-        new Permissions(this).requestPermissions(AUDIO_PERMISSION, new PermissionFragment.OnPermissionResult() {
+        PermissionFragment.OnPermissionResult onPermissionResult = new PermissionFragment.OnPermissionResult() {
             @Override
             public void onPermissionResult(int requestCode, ArrayList<String> grantPermission, ArrayList<String> shouldShowRationalePermission, ArrayList<String> neverAskAgainPermission) {
-
                 Log.e("huangyuan","grantPermission:"+grantPermission);
                 Log.e("huangyuan","shouldShowRationalePermission:"+shouldShowRationalePermission);
                 Log.e("huangyuan","neverAskAgainPermission:"+neverAskAgainPermission);
             }
-        }, Manifest.permission.RECORD_AUDIO);
+        };
+
+        new Permissions(this).requestPermissions(AUDIO_PERMISSION, onPermissionResult, Manifest.permission.RECORD_AUDIO);
 
 
     }

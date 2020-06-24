@@ -5,11 +5,11 @@
 > 新增 广播接收器支持permission
 > 新增 广播接收器支持flag
 > 新增 广播接收器支持priority
-
+> 优化PermissionUtil
 ### 引用
 
 ``` gradle
-implementation 'com.huangyuanlove:view-inject-api:1.1.0'
+implementation 'com.huangyuanlove:view-inject-api:1.1.1'
 implementation 'com.huangyuanlove:view-inject-annotation:1.1.0'
 annotationProcessor 'com.huangyuanlove:view-inject-compile:1.1.0'
 ```
@@ -28,6 +28,50 @@ annotationProcessor 'com.huangyuanlove:view-inject-compile:1.1.0'
 ```
 
 
+
+----
+
+view-inject-annotation1.1.1 变更
+
+### 权限相关优化
+
+1.1.1之前的版本(不包含1.1.1)在使用`PermissionUtil`时，从流程上来讲还是挺繁琐的：
+
+1. 先调用`PermissionUtil.hasSelfPermissions`来检测是否有权限
+2. 然后调用`PermissionUtil.shouldShowRequestPermissionRationale`判断是否需要弹出权限说明窗
+3. 最后调用`ActivityCompat.requestPermissions`来请求权限
+4. 然后在重写`Activity`的`onRequestPermissionsResult`方法，在该方法中通过`PermissionUtil.onRequestPermissionsResult(this,requestCode,permissions,grantResults,new PermissionUtil.RequestPermissionResult())`判断用户对权限的响应
+
+优化之后，我们只需要`new Permissions(this).requestPermissions(int requestCode, PermissionFragment.OnPermissionResult onPermissionResult, String... permissions)`这个方法就好了，代码如下：
+
+``` java
+PermissionFragment.OnPermissionResult onPermissionResult = new PermissionFragment.OnPermissionResult() {
+            @Override
+            public void onPermissionResult(int requestCode, ArrayList<String> grantPermission, ArrayList<String> shouldShowRationalePermission, ArrayList<String> neverAskAgainPermission) {
+                Log.e("huangyuan","grantPermission:"+grantPermission);
+                Log.e("huangyuan","shouldShowRationalePermission:"+shouldShowRationalePermission);
+                Log.e("huangyuan","neverAskAgainPermission:"+neverAskAgainPermission);
+            }
+        };
+        
+new Permissions(this).requestPermissions(AUDIO_PERMISSION, onPermissionResult, Manifest.permission.RECORD_AUDIO);
+```
+
+1. 实现`PermissionFragment.OnPermissionResult`接口
+2. 创建`Permissions`
+3. 调用`Permissions`的实例方法`requestPermissions`,第一个参数为int类型requestCode，第二个参数为步骤1中的实现类，后面的不定长参数是需要申请的权限
+
+Q:为什么在Activity和Fragment中同时重写了`onRequestPermissionsResult`方法，在Fragment中收不到回调？
+
+A:在Activity中使用`ActivityCompat.requestPermissions`来申请权限，在Fragmen中直接使用`requestPermissions`申请权限；如果Fragment和Activity同时重写了``onRequestPermissionsResult``方法，则需要在Activity重写的方法中调用`super.onRequestPermissionsResult`，这样Fragment中才会收到回调。至于为什么，RTFSC。
+
+
+
+
+
+----
+
+以下是1.1.0版本说明
 
 
 ### @BindView
