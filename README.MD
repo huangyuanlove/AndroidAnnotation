@@ -1,5 +1,7 @@
 ## 编译时注解框架
 
+### 新增AndroidStudio插件
+可配合 https://github.com/huangyuanlove/AndroidAnnotation-Plugin 插件使用,类似ButterKnife一键生成代码
 
 ### change log
 > 新增 广播接收器支持permission
