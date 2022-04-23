@@ -446,8 +446,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
             methodBuilder = MethodSpec.methodBuilder("bind")
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .addParameter(ClassName.get(typeElement.asType()), "target", Modifier.FINAL)
-                    .addParameter(ClassName.get("android.view", "View"), "view")
-                    .addStatement("int resourceID = 0");
+                    .addParameter(ClassName.get("android.view", "View"), "view");
             typeSpecWrapper.putMethodBuilder(methodBuilder);
         }
         return methodBuilder;
@@ -537,12 +536,13 @@ public class ViewInjectProcessor extends AbstractProcessor {
 
         if (params <= 0) {
             String idStr = bindView.idStr();
-            methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
+//            methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
+            methodBuilder.addStatement("target.$L = view.findViewById(R.id.$L)", varName,idStr);
 
         } else {
-            methodBuilder.addStatement("resourceID = ($L)", params);
+//            methodBuilder.addStatement("resourceID = ($L)", params);
+        methodBuilder.addStatement("target.$L = view.findViewById($L)", varName,params);
         }
-        methodBuilder.addStatement("target.$L = ($L) view.findViewById(resourceID)", varName, varType);
 
     }
 
@@ -592,10 +592,7 @@ public class ViewInjectProcessor extends AbstractProcessor {
                         .addSuperinterface(ClassName.bestGuess("View.OnClickListener"))
                         .addMethod(innerMethodSpec)
                         .build();
-
-                methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
-
-                methodBuilder.addStatement("view.findViewById($L).setOnClickListener($L)", "resourceID", innerTypeSpec);
+                methodBuilder.addStatement("view.findViewById(R.id.$L).setOnClickListener($L)", idStr, innerTypeSpec);
 
             }
         }
@@ -651,9 +648,9 @@ public class ViewInjectProcessor extends AbstractProcessor {
                         .addMethod(innerMethodSpec)
                         .build();
 
-                methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
+//                methodBuilder.addStatement("resourceID = view.getResources().getIdentifier($S,$S, view.getContext().getPackageName())", idStr, "id");
 
-                methodBuilder.addStatement("view.findViewById($L).setOnLongClickListener($L)", "resourceID", innerTypeSpec);
+                methodBuilder.addStatement("view.findViewById(R.id.$L).setOnLongClickListener($L)", idStr, innerTypeSpec);
 
             }
         }

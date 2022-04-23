@@ -33,7 +33,16 @@ annotationProcessor 'com.huangyuanlove:view-inject-compile:1.1.0'
 
 ----
 
-view-inject-annotation1.1.1 变更
+### 重要
+@BindView 注解推荐使用idStr，不建议使用id；gradle8.0之后生成的R文件字段不再是final，无法用于注解
+
+### 优化方向
+
+1. idStr不再使用 `getResources().getIdentifier`,可以使用字符串拼接方式，但是需要导入对应R文件才行
+2. id方式可以自己复制一份R文件，使其字段变成final类型
+
+
+** view-inject-annotation1.1.1 变更 **
 
 ### 权限相关优化
 

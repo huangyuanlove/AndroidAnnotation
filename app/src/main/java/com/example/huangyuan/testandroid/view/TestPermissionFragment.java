@@ -16,11 +16,8 @@ import com.example.huangyuan.testandroid.R;
 import com.huangyuanlove.view_inject_api.ViewInjector;
 import com.huangyuanlove.view_inject_api.permissin.PermissionFragment;
 import com.huangyuanlove.view_inject_api.permissin.Permissions;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.util.ArrayList;
-
-import io.reactivex.functions.Consumer;
 
 /**
  * Description:

@@ -16,6 +16,7 @@ import com.huangyuanlove.temp.EXT_MainActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 
 public class MainActivity extends Activity {
@@ -57,6 +58,7 @@ public class MainActivity extends Activity {
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
+
 
 
     @OnClick(id = R.id.test_view_inject)
